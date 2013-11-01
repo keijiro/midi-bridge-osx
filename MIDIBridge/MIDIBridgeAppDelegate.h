@@ -3,10 +3,6 @@
 
 @interface MIDIBridgeAppDelegate : NSObject <NSApplicationDelegate>
 {
-    int _inSocket;
-    int _outSocket;
-    dispatch_source_t _inSource;
-    dispatch_source_t _outSource;
     MIDIClientRef _midiClient;
     MIDIPortRef _midiInputPort;
     MIDIUniqueID _sourceIDs[256];

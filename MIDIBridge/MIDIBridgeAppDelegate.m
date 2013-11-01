@@ -1,11 +1,6 @@
 #import "MIDIBridgeAppDelegate.h"
 #import "MIDIMessage.h"
-#import <arpa/inet.h>
-
-#pragma mark Configuration
-
-#define MIDI_IN_PORT 52364
-#define MIDI_OUT_PORT 52365
+#import "IPCHandler.h"
 
 #pragma mark Private method definition
 
@@ -13,6 +8,8 @@
 
 - (void)resetStatus;
 - (void)processIncoming:(MIDIMessage *)message;
+
+@property (strong) IPCHandler *ipcHandler;
 
 @end
 
@@ -47,6 +44,7 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
         for (int offs = 0; offs < packet->length;) {
             MIDIMessage *message = [[MIDIMessage alloc] initWithSource:sourceID];
             offs = [message readPacket:packet dataOffset:offs];
+            [delegate.ipcHandler sendMessage:message];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [delegate processIncoming:message];
             });
@@ -63,6 +61,7 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
+    self.ipcHandler = [[IPCHandler alloc] init];
     [self resetStatus];
 }
 
@@ -130,84 +129,3 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
 }
 
 @end
-
-#pragma mark
-#pragma mark Memo :)
-
-#if 0
-// Create the MIDI-in socket.
-{
-    _inSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    NSAssert(_inSocket >= 0, @"Failed to create a socket (%d).", errno);
-    
-    struct sockaddr_in addr;
-    bzero(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = 0;
-    
-    int err = bind(_inSocket, (struct sockaddr *)&addr, sizeof(addr));
-    NSAssert(err == 0, @"Failed to bind a socket (%d).", errno);
-}
-
-// Create the MIDI-out socket.
-{
-    _outSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    NSAssert(_outSocket >= 0, @"Failed to create a socket (%d).", errno);
-    
-    struct sockaddr_in addr;
-    bzero(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = htons(MIDI_OUT_PORT);
-    
-    int err = bind(_outSocket, (struct sockaddr *)&addr, sizeof(addr));
-    NSAssert(err == 0, @"Failed to bind a socket (%d).", errno);
-}
-
-// Uses the default queue to dispatching.
-dispatch_queue_t defaultQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-
-// Start the MIDI-in handler.
-_inSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, defaultQueue);
-dispatch_source_set_timer(_inSource, DISPATCH_TIME_NOW, NSEC_PER_SEC / 3, NSEC_PER_SEC / 2);
-{
-    // sockaddr for MIDI-in.
-    struct sockaddr_in addr;
-    bzero(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    inet_aton("127.0.0.1", &(addr.sin_addr));
-    addr.sin_port = htons(MIDI_IN_PORT);
-    
-    // Other local variables for the handler.
-    __block int counter = 0;
-    
-    // The handler block.
-    dispatch_source_set_event_handler(_inSource, ^{
-        char buffer[256];
-        snprintf(buffer, sizeof(buffer), "Hooray! %d", counter);
-        sendto(_inSocket, buffer, strlen(buffer), MSG_DONTWAIT, (struct sockaddr *)&addr, sizeof(addr));
-        counter++;
-    });
-}
-dispatch_resume(_inSource);
-
-// Start the MIDI-out handler.
-_outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _outSocket, 0, defaultQueue);
-dispatch_source_set_event_handler(_outSource, ^{
-    char buffer[1024];
-    size_t estimated = dispatch_source_get_data(_outSource);
-    recv(_outSocket, buffer, estimated, 0);
-    buffer[estimated] = 0;
-    
-    NSAttributedString *string = [[NSAttributedString alloc] initWithString:[[NSString stringWithUTF8String:buffer] stringByAppendingString:@"\n"]];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.textView.textStorage beginEditing];
-        [self.textView.textStorage appendAttributedString:string];
-        [self.textView.textStorage endEditing];
-        [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
-    });
-});
-dispatch_resume(_outSource);
-#endif

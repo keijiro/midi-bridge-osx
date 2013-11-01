@@ -37,4 +37,12 @@
     return offset;
 }
 
+- (UInt32)packedData
+{
+    return
+        (UInt32)self->_status |
+        ((UInt32)self->_data1 << 8) |
+        ((UInt32)self->_data2 << 16);
+}
+
 @end

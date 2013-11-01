@@ -7,6 +7,7 @@
 - (id)initWithSource:(MIDIUniqueID)sourceID;
 - (int)readPacket:(const MIDIPacket *)packet dataOffset:(int)offset;
 
+@property (readonly) UInt32 packedData;
 @property (assign) MIDIUniqueID sourceID;
 @property (assign) Byte status;
 @property (assign) Byte data1;
