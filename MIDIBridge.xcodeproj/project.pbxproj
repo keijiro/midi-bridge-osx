@@ -16,8 +16,6 @@
 		0FD64F4B18238780000BA60B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0FD64F4A18238780000BA60B /* Images.xcassets */; };
 		0FD64F5218238781000BA60B /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F5118238781000BA60B /* XCTest.framework */; };
 		0FD64F5318238781000BA60B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F3218238780000BA60B /* Cocoa.framework */; };
-		0FD64F5B18238781000BA60B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0FD64F5918238781000BA60B /* InfoPlist.strings */; };
-		0FD64F5D18238781000BA60B /* MIDIBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD64F5C18238781000BA60B /* MIDIBridgeTests.m */; };
 		0FD64F6718238ACC000BA60B /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F6618238ACC000BA60B /* CoreMIDI.framework */; };
 		0FD64F6A18239F1C000BA60B /* MIDIMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD64F6918239F1C000BA60B /* MIDIMessage.m */; };
 		0FD64F6D1823A2DB000BA60B /* IPCHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD64F6C1823A2DB000BA60B /* IPCHandler.m */; };
@@ -50,9 +48,6 @@
 		0FD64F4A18238780000BA60B /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		0FD64F5018238781000BA60B /* MIDIBridgeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MIDIBridgeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FD64F5118238781000BA60B /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		0FD64F5818238781000BA60B /* MIDIBridgeTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MIDIBridgeTests-Info.plist"; sourceTree = "<group>"; };
-		0FD64F5A18238781000BA60B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		0FD64F5C18238781000BA60B /* MIDIBridgeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIDIBridgeTests.m; sourceTree = "<group>"; };
 		0FD64F6618238ACC000BA60B /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		0FD64F6818239F1C000BA60B /* MIDIMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIDIMessage.h; sourceTree = "<group>"; };
 		0FD64F6918239F1C000BA60B /* MIDIMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIDIMessage.m; sourceTree = "<group>"; };
@@ -86,7 +81,6 @@
 			isa = PBXGroup;
 			children = (
 				0FD64F3818238780000BA60B /* MIDIBridge */,
-				0FD64F5618238781000BA60B /* MIDIBridgeTests */,
 				0FD64F3118238780000BA60B /* Frameworks */,
 				0FD64F3018238780000BA60B /* Products */,
 			);
@@ -146,24 +140,6 @@
 				0FD64F3E18238780000BA60B /* main.m */,
 				0FD64F4018238780000BA60B /* MIDIBridge-Prefix.pch */,
 				0FD64F4118238780000BA60B /* Credits.rtf */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		0FD64F5618238781000BA60B /* MIDIBridgeTests */ = {
-			isa = PBXGroup;
-			children = (
-				0FD64F5C18238781000BA60B /* MIDIBridgeTests.m */,
-				0FD64F5718238781000BA60B /* Supporting Files */,
-			);
-			path = MIDIBridgeTests;
-			sourceTree = "<group>";
-		};
-		0FD64F5718238781000BA60B /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				0FD64F5818238781000BA60B /* MIDIBridgeTests-Info.plist */,
-				0FD64F5918238781000BA60B /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -256,7 +232,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0FD64F5B18238781000BA60B /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,7 +253,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0FD64F5D18238781000BA60B /* MIDIBridgeTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,14 +289,6 @@
 				0FD64F4818238780000BA60B /* Base */,
 			);
 			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-		0FD64F5918238781000BA60B /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				0FD64F5A18238781000BA60B /* en */,
-			);
-			name = InfoPlist.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

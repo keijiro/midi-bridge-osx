@@ -28,16 +28,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0FD64F4F18238781000BA60B"
-               BuildableName = "MIDIBridgeTests.xctest"
-               BlueprintName = "MIDIBridgeTests"
-               ReferencedContainer = "container:MIDIBridge.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
