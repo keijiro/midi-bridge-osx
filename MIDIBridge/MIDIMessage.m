@@ -12,6 +12,17 @@
     return self;
 }
 
+- (id)initWithBytes:(const Byte *)bytes
+{
+    self = [super init];
+    if (self) {
+        self.status = bytes[0];
+        self.data1 = bytes[1];
+        self.data2 = bytes[2];
+    }
+    return self;
+}
+
 - (int)readPacket:(const MIDIPacket *)packet dataOffset:(int)offset
 {
     // Status byte.

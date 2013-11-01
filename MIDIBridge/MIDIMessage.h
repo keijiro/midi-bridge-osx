@@ -5,6 +5,7 @@
 @interface MIDIMessage : NSObject
 
 - (id)initWithSource:(MIDIUniqueID)sourceID;
+- (id)initWithBytes:(const Byte *)bytes;
 - (int)readPacket:(const MIDIPacket *)packet dataOffset:(int)offset;
 
 @property (readonly) UInt32 packedData;

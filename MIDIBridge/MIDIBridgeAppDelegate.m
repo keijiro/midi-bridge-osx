@@ -62,6 +62,13 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
     self.ipcHandler = [[IPCHandler alloc] init];
+    
+    [self.ipcHandler registerReceiveHandler:^(MIDIMessage *message){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self processIncoming:message];
+        });
+    }];
+    
     [self resetStatus];
 }
 

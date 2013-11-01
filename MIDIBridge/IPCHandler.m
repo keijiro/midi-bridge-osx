@@ -29,6 +29,35 @@
             int err = bind(_inSocket, (struct sockaddr *)&addr, sizeof(addr));
             NSAssert(err == 0, @"Failed to bind a socket (%d).", errno);
         }
+        
+        // Create the MIDI-out socket.
+        {
+            _outSocket = socket(AF_INET, SOCK_DGRAM, 0);
+            NSAssert(_outSocket >= 0, @"Failed to create a socket (%d).", errno);
+            
+            struct sockaddr_in addr;
+            bzero(&addr, sizeof(addr));
+            addr.sin_family = AF_INET;
+            addr.sin_addr.s_addr = htonl(INADDR_ANY);
+            addr.sin_port = htons(MIDI_OUT_PORT);
+            
+            int err = bind(_outSocket, (struct sockaddr *)&addr, sizeof(addr));
+            NSAssert(err == 0, @"Failed to bind a socket (%d).", errno);
+        }
+
+        // Start the MIDI-out handler.
+        dispatch_queue_t defaultQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        _outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _outSocket, 0, defaultQueue);
+        dispatch_source_set_event_handler(_outSource, ^{
+            Byte buffer[1024];
+            size_t estimated = dispatch_source_get_data(_outSource);
+            recv(_outSocket, buffer, estimated, 0);
+            
+            if (estimated == 4) {
+                _receiveHandler([[MIDIMessage alloc] initWithBytes:buffer]);
+            }
+        });
+        dispatch_resume(_outSource);
     }
     return self;
 }
@@ -48,49 +77,9 @@
     });
 }
 
-@end
-
-#pragma mark
-#pragma mark Memo :)
-
-#if 0
-
-// Uses the default queue to dispatching.
-dispatch_queue_t defaultQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-
-// Create the MIDI-out socket.
+- (void)registerReceiveHandler:(IPCHandlerReceiveHandler)block
 {
-    _outSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    NSAssert(_outSocket >= 0, @"Failed to create a socket (%d).", errno);
-    
-    struct sockaddr_in addr;
-    bzero(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    addr.sin_port = htons(MIDI_OUT_PORT);
-    
-    int err = bind(_outSocket, (struct sockaddr *)&addr, sizeof(addr));
-    NSAssert(err == 0, @"Failed to bind a socket (%d).", errno);
+    _receiveHandler = block;
 }
 
-
-
-// Start the MIDI-out handler.
-_outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _outSocket, 0, defaultQueue);
-dispatch_source_set_event_handler(_outSource, ^{
-    char buffer[1024];
-    size_t estimated = dispatch_source_get_data(_outSource);
-    recv(_outSocket, buffer, estimated, 0);
-    buffer[estimated] = 0;
-    
-    NSAttributedString *string = [[NSAttributedString alloc] initWithString:[[NSString stringWithUTF8String:buffer] stringByAppendingString:@"\n"]];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.textView.textStorage beginEditing];
-        [self.textView.textStorage appendAttributedString:string];
-        [self.textView.textStorage endEditing];
-        [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
-    });
-});
-dispatch_resume(_outSource);
-#endif
+@end
