@@ -18,6 +18,7 @@
 		0FD64F5318238781000BA60B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F3218238780000BA60B /* Cocoa.framework */; };
 		0FD64F5B18238781000BA60B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0FD64F5918238781000BA60B /* InfoPlist.strings */; };
 		0FD64F5D18238781000BA60B /* MIDIBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD64F5C18238781000BA60B /* MIDIBridgeTests.m */; };
+		0FD64F6718238ACC000BA60B /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F6618238ACC000BA60B /* CoreMIDI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +51,7 @@
 		0FD64F5818238781000BA60B /* MIDIBridgeTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MIDIBridgeTests-Info.plist"; sourceTree = "<group>"; };
 		0FD64F5A18238781000BA60B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		0FD64F5C18238781000BA60B /* MIDIBridgeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MIDIBridgeTests.m; sourceTree = "<group>"; };
+		0FD64F6618238ACC000BA60B /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0FD64F6718238ACC000BA60B /* CoreMIDI.framework in Frameworks */,
 				0FD64F3318238780000BA60B /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -95,6 +98,7 @@
 		0FD64F3118238780000BA60B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0FD64F6618238ACC000BA60B /* CoreMIDI.framework */,
 				0FD64F3218238780000BA60B /* Cocoa.framework */,
 				0FD64F5118238781000BA60B /* XCTest.framework */,
 				0FD64F3418238780000BA60B /* Other Frameworks */,
