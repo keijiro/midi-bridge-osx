@@ -1,5 +1,5 @@
 #import "MIDIBridgeAppDelegate.h"
-#import <CoreMIDI/CoreMIDI.h>
+#import "MIDIMessage.h"
 #import <arpa/inet.h>
 
 #pragma mark Configuration
@@ -7,22 +7,12 @@
 #define MIDI_IN_PORT 52364
 #define MIDI_OUT_PORT 52365
 
-#pragma mark Local data structure
-
-struct MIDIMessage
-{
-    MIDIUniqueID source;
-    Byte status;
-    Byte data[2];
-    Byte padding;
-};
-
 #pragma mark Private method definition
 
 @interface MIDIBridgeAppDelegate ()
 
 - (void)resetStatus;
-- (void)processIncoming:(NSData *)data;
+- (void)processIncoming:(MIDIMessage *)message;
 
 @end
 
@@ -47,34 +37,22 @@ static void MyMIDIStateChangedHander(const MIDINotification* message, void* refC
 
 static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCon, void *srcConnRefCon)
 {
+    MIDIBridgeAppDelegate *delegate = (__bridge MIDIBridgeAppDelegate *)(readProcRefCon);
     MIDIUniqueID sourceID = *(MIDIUniqueID *)srcConnRefCon;
-    
-    NSMutableData *data = [NSMutableData data];
     
     // Transform the packets into MIDI messages and push it to the message queue.
     const MIDIPacket *packet = &packetList->packet[0];
     for (int packetCount = 0; packetCount < packetList->numPackets; packetCount++) {
         // Extract MIDI messages from the data stream.
         for (int offs = 0; offs < packet->length;) {
-            struct MIDIMessage msg;
-            msg.source = sourceID;
-            msg.status = packet->data[offs++];
-            msg.data[0] = 0;
-            msg.data[1] = 0;
-            
-            for (int dc = 0; offs < packet->length && (packet->data[offs] < 0x80); dc++, offs++) {
-                if (dc < 2) msg.data[dc] = packet->data[offs];
-            }
-            
-            [data appendBytes:&msg length:sizeof(msg)];
+            MIDIMessage *message = [[MIDIMessage alloc] initWithSource:sourceID];
+            offs = [message readPacket:packet dataOffset:offs];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [delegate processIncoming:message];
+            });
         }
         packet = MIDIPacketNext(packet);
     }
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        MIDIBridgeAppDelegate *delegate = (__bridge MIDIBridgeAppDelegate *)(readProcRefCon);
-        [delegate processIncoming:data];
-    });
 }
 
 #pragma mark
@@ -113,9 +91,14 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
     [self.deviceTable reloadData];
 }
 
-- (void)processIncoming:(NSData *)data
+- (void)processIncoming:(MIDIMessage *)message
 {
-    NSLog(@"data:%lu", (unsigned long)[data length]);
+    NSString *line = [NSString stringWithFormat:@"%0x %0x %0x %0x", message.sourceID, message.status, message.data1, message.data2];
+    NSAttributedString *string = [[NSAttributedString alloc] initWithString:[line stringByAppendingString:@"\n"]];
+    [self.textView.textStorage beginEditing];
+    [self.textView.textStorage appendAttributedString:string];
+    [self.textView.textStorage endEditing];
+    [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
 }
 
 #pragma mark Table View Data Soruce methods
