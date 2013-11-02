@@ -19,9 +19,9 @@ public class Sender : MonoBehaviour
             MidiMessage message;
 
             if (flipFlop) {
-                message = new MidiMessage(0x80, 44, 100);
+                message = new MidiMessage(0x90, 44, 100);
             } else {
-                message = new MidiMessage(0x90, 44, 0);
+                message = new MidiMessage(0x80, 44, 0);
             }
             flipFlop = !flipFlop;
 
