@@ -2,20 +2,21 @@
 #import "MIDIMessage.h"
 #import <arpa/inet.h>
 
-#pragma mark Configuration
+#pragma mark Local configuration
 
 #define MIDI_IN_PORT 52364
 #define MIDI_OUT_PORT 52365
 
 #pragma mark
+#pragma mark IPC router class implementation
 
 @implementation IPCRouter
 
-- (id)initWithReceiver:(IPCReceiver)receiver
+- (id)initWithDelegate:(id)delegate
 {
     self = [super init];
     if (self) {
-        _receiver = receiver;
+        self.delegate = delegate;
         
         // Create the MIDI-in socket.
         {
@@ -55,8 +56,12 @@
             size_t estimated = dispatch_source_get_data(_outSource);
             recv(_outSocket, buffer, estimated, 0);
             
+            MIDIMessage *message = [[MIDIMessage alloc] initWithBytes:buffer];
+            
             if (estimated == 4) {
-                _receiver([[MIDIMessage alloc] initWithBytes:buffer]);
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.delegate processIncomingIPCMessage:message];
+                });
             }
         });
         dispatch_resume(_outSource);

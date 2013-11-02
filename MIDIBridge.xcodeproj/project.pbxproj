@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0FB721431824DD5B00E244FE /* MIDIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FB721421824DD5B00E244FE /* MIDIClient.m */; };
 		0FD64F3318238780000BA60B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F3218238780000BA60B /* Cocoa.framework */; };
 		0FD64F3D18238780000BA60B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0FD64F3B18238780000BA60B /* InfoPlist.strings */; };
 		0FD64F3F18238780000BA60B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD64F3E18238780000BA60B /* main.m */; };
@@ -32,6 +33,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0FB721411824DD5B00E244FE /* MIDIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIDIClient.h; sourceTree = "<group>"; };
+		0FB721421824DD5B00E244FE /* MIDIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIDIClient.m; sourceTree = "<group>"; };
 		0FD64F2F18238780000BA60B /* MIDIBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MIDIBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FD64F3218238780000BA60B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		0FD64F3518238780000BA60B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -128,6 +131,8 @@
 				0FD64F6918239F1C000BA60B /* MIDIMessage.m */,
 				0FD64F6B1823A2DB000BA60B /* IPCRouter.h */,
 				0FD64F6C1823A2DB000BA60B /* IPCRouter.m */,
+				0FB721411824DD5B00E244FE /* MIDIClient.h */,
+				0FB721421824DD5B00E244FE /* MIDIClient.m */,
 			);
 			path = MIDIBridge;
 			sourceTree = "<group>";
@@ -242,6 +247,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0FB721431824DD5B00E244FE /* MIDIClient.m in Sources */,
 				0FD64F6A18239F1C000BA60B /* MIDIMessage.m in Sources */,
 				0FD64F6D1823A2DB000BA60B /* IPCRouter.m in Sources */,
 				0FD64F4618238780000BA60B /* MIDIBridgeAppDelegate.m in Sources */,
