@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F8CBABC182527A90049F20D /* Status.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8CBAB6182527A90049F20D /* Status.png */; };
+		0F8CBABD182527A90049F20D /* Status@x2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8CBAB7182527A90049F20D /* Status@x2.png */; };
+		0F8CBABE182527A90049F20D /* StatusActive.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8CBAB8182527A90049F20D /* StatusActive.png */; };
+		0F8CBABF182527A90049F20D /* StatusActive@x2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8CBAB9182527A90049F20D /* StatusActive@x2.png */; };
+		0F8CBAC0182527A90049F20D /* StatusHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8CBABA182527A90049F20D /* StatusHighlighted.png */; };
+		0F8CBAC1182527A90049F20D /* StatusHighlighted@x2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0F8CBABB182527A90049F20D /* StatusHighlighted@x2.png */; };
 		0FB721431824DD5B00E244FE /* MIDIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FB721421824DD5B00E244FE /* MIDIClient.m */; };
 		0FD64F3318238780000BA60B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F3218238780000BA60B /* Cocoa.framework */; };
 		0FD64F3D18238780000BA60B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0FD64F3B18238780000BA60B /* InfoPlist.strings */; };
@@ -33,6 +39,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0F8CBAB6182527A90049F20D /* Status.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Status.png; sourceTree = "<group>"; };
+		0F8CBAB7182527A90049F20D /* Status@x2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Status@x2.png"; sourceTree = "<group>"; };
+		0F8CBAB8182527A90049F20D /* StatusActive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = StatusActive.png; sourceTree = "<group>"; };
+		0F8CBAB9182527A90049F20D /* StatusActive@x2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusActive@x2.png"; sourceTree = "<group>"; };
+		0F8CBABA182527A90049F20D /* StatusHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = StatusHighlighted.png; sourceTree = "<group>"; };
+		0F8CBABB182527A90049F20D /* StatusHighlighted@x2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "StatusHighlighted@x2.png"; sourceTree = "<group>"; };
 		0FB721411824DD5B00E244FE /* MIDIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIDIClient.h; sourceTree = "<group>"; };
 		0FB721421824DD5B00E244FE /* MIDIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIDIClient.m; sourceTree = "<group>"; };
 		0FD64F2F18238780000BA60B /* MIDIBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MIDIBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -140,6 +152,12 @@
 		0FD64F3918238780000BA60B /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0F8CBAB6182527A90049F20D /* Status.png */,
+				0F8CBAB7182527A90049F20D /* Status@x2.png */,
+				0F8CBAB8182527A90049F20D /* StatusActive.png */,
+				0F8CBAB9182527A90049F20D /* StatusActive@x2.png */,
+				0F8CBABA182527A90049F20D /* StatusHighlighted.png */,
+				0F8CBABB182527A90049F20D /* StatusHighlighted@x2.png */,
 				0FD64F3A18238780000BA60B /* MIDIBridge-Info.plist */,
 				0FD64F3B18238780000BA60B /* InfoPlist.strings */,
 				0FD64F3E18238780000BA60B /* main.m */,
@@ -226,10 +244,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F8CBABF182527A90049F20D /* StatusActive@x2.png in Resources */,
 				0FD64F3D18238780000BA60B /* InfoPlist.strings in Resources */,
 				0FD64F4B18238780000BA60B /* Images.xcassets in Resources */,
+				0F8CBAC0182527A90049F20D /* StatusHighlighted.png in Resources */,
+				0F8CBABD182527A90049F20D /* Status@x2.png in Resources */,
 				0FD64F4318238780000BA60B /* Credits.rtf in Resources */,
+				0F8CBABC182527A90049F20D /* Status.png in Resources */,
 				0FD64F4918238780000BA60B /* MainMenu.xib in Resources */,
+				0F8CBAC1182527A90049F20D /* StatusHighlighted@x2.png in Resources */,
+				0F8CBABE182527A90049F20D /* StatusActive.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

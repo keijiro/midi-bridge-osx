@@ -19,26 +19,83 @@
 {
     self.midiClient = [[MIDIClient alloc] initWithDelegate:self];
     self.ipcRouter = [[IPCRouter alloc] initWithDelegate:self];
-    [self.deviceTable reloadData];
+
+    self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+
+    [self resetMIDIStatus];
+    
+    [NSTimer scheduledTimerWithTimeInterval:0.25f target:self selector:@selector(updateIndicator) userInfo:nil repeats:YES];
+}
+
+#pragma mark UI Actions
+
+- (void)openLogView:(id)sender
+{
+}
+
+- (void)selectSourceItem:(id)sender
+{
+}
+
+- (void)selectDestinationItem:(id)sender
+{
+    self.midiClient.defaultDestination = [sender tag];
+    [self resetMIDIStatus];
+}
+
+- (void)updateIndicator
+{
+    NSString *imageName = (_signalCount == 0) ? @"Status" : @"StatusActive";
+    self.statusItem.image = [NSImage imageNamed:imageName];
+    _signalCount = 0;
 }
 
 #pragma mark MIDIClient delegate methods
 
 - (void)resetMIDIStatus
 {
-    [self.deviceTable reloadData];
+    self.statusMenu = [[NSMenu alloc] init];
+    [self.statusItem setMenu:self.statusMenu];
+    
+    self.statusItem.image = [NSImage imageNamed:@"Status"];
+    self.statusItem.alternateImage = [NSImage imageNamed:@"StatusHighlighted"];
+    [self.statusItem setHighlightMode:YES];
+    
+    [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Open Log Viewer..." action:@selector(openLogView:) keyEquivalent:@""]];
+    
+    [self.statusMenu addItem:[NSMenuItem separatorItem]];
+    
+    if (self.midiClient.sourceCount == 0) {
+        [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"No MIDI Sources" action:NULL keyEquivalent:@""]];
+    } else {
+        [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"MIDI Sources" action:NULL keyEquivalent:@""]];
+        for (NSUInteger i = 0; i < self.midiClient.sourceCount; i++) {
+            [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:[self.midiClient getSourceDisplayName:i] action:@selector(selectSourceItem:) keyEquivalent:@""]];
+        }
+    }
+    
+    [self.statusMenu addItem:[NSMenuItem separatorItem]];
+
+    if (self.midiClient.destinationCount == 0) {
+        [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"No MIDI Destinations" action:NULL keyEquivalent:@""]];
+    } else {
+        [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"MIDI Destinations" action:NULL keyEquivalent:@""]];
+        for (NSUInteger i = 0; i < self.midiClient.destinationCount; i++) {
+            NSMenuItem *item =[[NSMenuItem alloc] initWithTitle:[self.midiClient getDestinationDisplayName:i] action:@selector(selectDestinationItem:) keyEquivalent:@""];
+            item.tag = i;
+            if (i == self.midiClient.defaultDestination) item.state = NSOnState;
+            [self.statusMenu addItem:item];
+        }
+    }
+
+    [self.statusMenu addItem:[NSMenuItem separatorItem]];
+    [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Quit MIDIBridge" action:@selector(terminate:) keyEquivalent:@""]];
 }
 
 - (void)processIncomingMIDIMessage:(MIDIMessage *)message
 {
     [self.ipcRouter sendMessage:message];
-    
-    NSString *line = [NSString stringWithFormat:@"%0x %0x %0x %0x", message.sourceID, message.status, message.data1, message.data2];
-    NSAttributedString *string = [[NSAttributedString alloc] initWithString:[line stringByAppendingString:@"\n"]];
-    [self.textView.textStorage beginEditing];
-    [self.textView.textStorage appendAttributedString:string];
-    [self.textView.textStorage endEditing];
-    [self.textView scrollRangeToVisible:NSMakeRange(self.textView.string.length, 0)];
+    _signalCount++;
 }
 
 #pragma mark IPCRouter delegate methods
@@ -46,21 +103,7 @@
 - (void)processIncomingIPCMessage:(MIDIMessage *)message
 {
     [self.midiClient sendMessage:message];
-}
-
-#pragma mark Table View Data Soruce methods
-
-- (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return self.midiClient.sourceCount + self.midiClient.destinationCount;
-}
-
-- (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-    if (!self.midiClient) return nil;
-    if (row < self.midiClient.sourceCount) {
-        return [self.midiClient getSourceDisplayName:row];
-    } else {
-        return [self.midiClient getDestinationDisplayName:(row - self.midiClient.sourceCount)];
-    }
+    _signalCount++;
 }
 
 @end

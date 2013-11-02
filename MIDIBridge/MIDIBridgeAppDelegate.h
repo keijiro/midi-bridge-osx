@@ -1,9 +1,11 @@
 #import <Cocoa/Cocoa.h>
 
 @interface MIDIBridgeAppDelegate : NSObject <NSApplicationDelegate>
+{
+    NSInteger _signalCount;
+}
 
-@property (assign) IBOutlet NSWindow *window;
-@property (assign) IBOutlet NSTableView *deviceTable;
-@property (assign) IBOutlet NSTextView *textView;
+@property (strong) NSMenu *statusMenu;
+@property (strong) NSStatusItem *statusItem;
 
 @end

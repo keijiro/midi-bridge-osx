@@ -19,7 +19,7 @@ static void StateChangedHander(const MIDINotification* message, void* refCon)
     
     // Only process source and destination operations.
     const MIDIObjectAddRemoveNotification *addRemoveDetail = (const MIDIObjectAddRemoveNotification *)(message);
-    if (addRemoveDetail->childType != kMIDIObjectType_Source || addRemoveDetail->childType != kMIDIObjectType_Destination) return;
+    if (addRemoveDetail->childType != kMIDIObjectType_Source && addRemoveDetail->childType != kMIDIObjectType_Destination) return;
     
     // Reset the client status.
     [client reset];
@@ -88,18 +88,23 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
         MIDIObjectGetIntegerProperty(source, kMIDIPropertyUniqueID, &_sourceIDs[i]);
         MIDIPortConnectSource(_midiInputPort, source, &_sourceIDs[i]);
     }
+    
+    // FIXME: choose a default destination properly.
+    _defaultDestination = -1;
 }
 
 - (void)sendMessage:(MIDIMessage *)message
 {
-    Byte buffer[32];
-    MIDIPacketList *packetList = (MIDIPacketList *)buffer;
-    MIDIPacket *packet = MIDIPacketListInit(packetList);
-    
-    UInt32 data = message.packedData;
-    MIDIPacketListAdd(packetList, sizeof(buffer), packet, 0, 3, (Byte*)&data);
-    
-    MIDISend(_midiOutputPort, MIDIGetDestination(0), packetList);
+    if (_defaultDestination >= 0) {
+        Byte buffer[32];
+        MIDIPacketList *packetList = (MIDIPacketList *)buffer;
+        MIDIPacket *packet = MIDIPacketListInit(packetList);
+        
+        UInt32 data = message.packedData;
+        MIDIPacketListAdd(packetList, sizeof(buffer), packet, 0, 3, (Byte*)&data);
+        
+        MIDISend(_midiOutputPort, MIDIGetDestination(self.defaultDestination), packetList);
+    }
 }
 
 #pragma mark Property accessors
