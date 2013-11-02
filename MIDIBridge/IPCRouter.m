@@ -1,4 +1,4 @@
-#import "IPCHandler.h"
+#import "IPCRouter.h"
 #import "MIDIMessage.h"
 #import <arpa/inet.h>
 
@@ -9,12 +9,14 @@
 
 #pragma mark
 
-@implementation IPCHandler
+@implementation IPCRouter
 
-- (id)init
+- (id)initWithReceiver:(IPCReceiver)receiver
 {
     self = [super init];
     if (self) {
+        _receiver = receiver;
+        
         // Create the MIDI-in socket.
         {
             _inSocket = socket(AF_INET, SOCK_DGRAM, 0);
@@ -54,7 +56,7 @@
             recv(_outSocket, buffer, estimated, 0);
             
             if (estimated == 4) {
-                _receiveHandler([[MIDIMessage alloc] initWithBytes:buffer]);
+                _receiver([[MIDIMessage alloc] initWithBytes:buffer]);
             }
         });
         dispatch_resume(_outSource);
@@ -75,11 +77,6 @@
         UInt32 data = message.packedData;
         sendto(_inSocket, &data, sizeof(data), MSG_DONTWAIT, (struct sockaddr *)&addr, sizeof(addr));
     });
-}
-
-- (void)registerReceiveHandler:(IPCHandlerReceiveHandler)block
-{
-    _receiveHandler = block;
 }
 
 @end

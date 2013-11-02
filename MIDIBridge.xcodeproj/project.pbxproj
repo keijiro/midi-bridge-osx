@@ -18,7 +18,7 @@
 		0FD64F5318238781000BA60B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F3218238780000BA60B /* Cocoa.framework */; };
 		0FD64F6718238ACC000BA60B /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F6618238ACC000BA60B /* CoreMIDI.framework */; };
 		0FD64F6A18239F1C000BA60B /* MIDIMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD64F6918239F1C000BA60B /* MIDIMessage.m */; };
-		0FD64F6D1823A2DB000BA60B /* IPCHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD64F6C1823A2DB000BA60B /* IPCHandler.m */; };
+		0FD64F6D1823A2DB000BA60B /* IPCRouter.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FD64F6C1823A2DB000BA60B /* IPCRouter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,8 +51,8 @@
 		0FD64F6618238ACC000BA60B /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = System/Library/Frameworks/CoreMIDI.framework; sourceTree = SDKROOT; };
 		0FD64F6818239F1C000BA60B /* MIDIMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIDIMessage.h; sourceTree = "<group>"; };
 		0FD64F6918239F1C000BA60B /* MIDIMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIDIMessage.m; sourceTree = "<group>"; };
-		0FD64F6B1823A2DB000BA60B /* IPCHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPCHandler.h; sourceTree = "<group>"; };
-		0FD64F6C1823A2DB000BA60B /* IPCHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPCHandler.m; sourceTree = "<group>"; };
+		0FD64F6B1823A2DB000BA60B /* IPCRouter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPCRouter.h; sourceTree = "<group>"; };
+		0FD64F6C1823A2DB000BA60B /* IPCRouter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPCRouter.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,8 +126,8 @@
 				0FD64F3918238780000BA60B /* Supporting Files */,
 				0FD64F6818239F1C000BA60B /* MIDIMessage.h */,
 				0FD64F6918239F1C000BA60B /* MIDIMessage.m */,
-				0FD64F6B1823A2DB000BA60B /* IPCHandler.h */,
-				0FD64F6C1823A2DB000BA60B /* IPCHandler.m */,
+				0FD64F6B1823A2DB000BA60B /* IPCRouter.h */,
+				0FD64F6C1823A2DB000BA60B /* IPCRouter.m */,
 			);
 			path = MIDIBridge;
 			sourceTree = "<group>";
@@ -243,7 +243,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0FD64F6A18239F1C000BA60B /* MIDIMessage.m in Sources */,
-				0FD64F6D1823A2DB000BA60B /* IPCHandler.m in Sources */,
+				0FD64F6D1823A2DB000BA60B /* IPCRouter.m in Sources */,
 				0FD64F4618238780000BA60B /* MIDIBridgeAppDelegate.m in Sources */,
 				0FD64F3F18238780000BA60B /* main.m in Sources */,
 			);
@@ -447,6 +447,7 @@
 				0FD64F6218238781000BA60B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		0FD64F6318238781000BA60B /* Build configuration list for PBXNativeTarget "MIDIBridgeTests" */ = {
 			isa = XCConfigurationList;
@@ -455,6 +456,7 @@
 				0FD64F6518238781000BA60B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

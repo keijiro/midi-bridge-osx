@@ -1,6 +1,6 @@
 #import "MIDIBridgeAppDelegate.h"
 #import "MIDIMessage.h"
-#import "IPCHandler.h"
+#import "IPCRouter.h"
 
 #pragma mark Private method definition
 
@@ -9,7 +9,7 @@
 - (void)resetStatus;
 - (void)processIncoming:(MIDIMessage *)message;
 
-@property (strong) IPCHandler *ipcHandler;
+@property (strong) IPCRouter *ipcHandler;
 
 @end
 
@@ -61,9 +61,7 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    self.ipcHandler = [[IPCHandler alloc] init];
-    
-    [self.ipcHandler registerReceiveHandler:^(MIDIMessage *message){
+    self.ipcHandler = [[IPCRouter alloc] initWithReceiver:^(MIDIMessage *message) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [self processIncoming:message];
         });
