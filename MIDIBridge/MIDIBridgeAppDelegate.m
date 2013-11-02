@@ -21,9 +21,9 @@ static void MyMIDIStateChangedHander(const MIDINotification* message, void* refC
     // Only process additions and removals.
     if (message->messageID != kMIDIMsgObjectAdded && message->messageID != kMIDIMsgObjectRemoved) return;
     
-    // Only process source operations.
+    // Only process source and destination operations.
     const MIDIObjectAddRemoveNotification *addRemoveDetail = (const MIDIObjectAddRemoveNotification *)(message);
-    if (addRemoveDetail->childType != kMIDIObjectType_Source) return;
+    if (addRemoveDetail->childType != kMIDIObjectType_Source || addRemoveDetail->childType != kMIDIObjectType_Destination) return;
     
     // Reset the client status (on the main thread).
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -63,6 +63,17 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
 {
     self.ipcHandler = [[IPCRouter alloc] initWithReceiver:^(MIDIMessage *message) {
         dispatch_async(dispatch_get_main_queue(), ^{
+        Byte buffer[256];
+        MIDIPacketList *packetList = (MIDIPacketList *)buffer;
+        MIDIPacket *packet = MIDIPacketListInit(packetList);
+        UInt32 data = message.packedData;
+        MIDIPacketListAdd(packetList, sizeof(buffer), packet, 0, 3, (Byte*)&data);
+        
+        OSStatus err = MIDISend(_midiOutputPort, MIDIGetDestination(0), packetList);
+            if (err != noErr) {
+                NSLog(@"send err: %d", err);
+            }
+        
             [self processIncoming:message];
         });
     }];
@@ -78,8 +89,9 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
     // Create a MIDI client.
     MIDIClientCreate(CFSTR("MIDIBridge Client"), MyMIDIStateChangedHander, (__bridge void *)(self), &_midiClient);
     
-    // Create a MIDI port which covers all MIDI sources.
+    // Create two MIDI ports for input and output.
     MIDIInputPortCreate(_midiClient, CFSTR("MIDIBridge Input Port"), MyMIDIReadProc, (__bridge void *)(self), &_midiInputPort);
+    MIDIOutputPortCreate(_midiClient, CFSTR("MIDIBridge Output Port"), &_midiOutputPort);
     
     // Enumerate the all MIDI sources.
     ItemCount sourceCount = MIDIGetNumberOfSources();
@@ -108,7 +120,7 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
 #pragma mark Table View Data Soruce methods
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
-    return _midiClient ? MIDIGetNumberOfSources() : 0;
+    return _midiClient ? MIDIGetNumberOfSources() + MIDIGetNumberOfDestinations() : 0;
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
@@ -118,13 +130,18 @@ static void MyMIDIReadProc(const MIDIPacketList *packetList, void *readProcRefCo
     
     if (columnID == 2) {
         // 2nd column: shows the display name.
-        MIDIObjectRef object;
-        MIDIObjectType type;
-        MIDIObjectFindByUniqueID(_sourceIDs[row], &object, &type);
-        NSAssert(type == kMIDIObjectType_Source, @"Invalid ID.");
-        
         CFStringRef name;
-        MIDIObjectGetStringProperty(object, kMIDIPropertyDisplayName, &name);
+        
+        if (row < MIDIGetNumberOfSources()) {
+            MIDIObjectRef object;
+            MIDIObjectType type;
+            MIDIObjectFindByUniqueID(_sourceIDs[row], &object, &type);
+            NSAssert(type == kMIDIObjectType_Source, @"Invalid ID.");
+            MIDIObjectGetStringProperty(object, kMIDIPropertyDisplayName, &name);
+        } else {
+            MIDIEndpointRef ref = MIDIGetDestination(row - MIDIGetNumberOfSources());
+            MIDIObjectGetStringProperty(ref, kMIDIPropertyDisplayName, &name);
+        }
         
         return (NSString*)CFBridgingRelease(name);
     }

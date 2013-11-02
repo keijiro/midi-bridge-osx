@@ -5,7 +5,8 @@
 {
     MIDIClientRef _midiClient;
     MIDIPortRef _midiInputPort;
-    MIDIUniqueID _sourceIDs[256];
+    MIDIPortRef _midiOutputPort;
+    MIDIUniqueID _sourceIDs[64];
 }
 
 @property (assign) IBOutlet NSWindow *window;
