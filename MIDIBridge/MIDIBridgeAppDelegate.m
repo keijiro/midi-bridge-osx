@@ -2,12 +2,14 @@
 #import "MIDIMessage.h"
 #import "MIDIClient.h"
 #import "IPCRouter.h"
+#import "LogWindowController.h"
 
 #pragma mark Private properties
 
 @interface MIDIBridgeAppDelegate ()
 @property (strong) MIDIClient *midiClient;
 @property (strong) IPCRouter *ipcRouter;
+@property (strong) LogWindowController *logWindowController;
 @end
 
 #pragma mark
@@ -21,6 +23,7 @@
     self.ipcRouter = [[IPCRouter alloc] initWithDelegate:self];
 
     self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+    self.logWindowController = [[LogWindowController alloc] initWithWindowNibName:@"LogWindow"];
 
     [self resetMIDIStatus];
     
@@ -31,6 +34,7 @@
 
 - (void)openLogView:(id)sender
 {
+    [self.logWindowController showWindow:nil];
 }
 
 - (void)selectSourceItem:(id)sender
@@ -95,6 +99,7 @@
 - (void)processIncomingMIDIMessage:(MIDIMessage *)message
 {
     [self.ipcRouter sendMessage:message];
+    [self.logWindowController logIncomingMessage:message];
     _signalCount++;
 }
 
@@ -103,6 +108,7 @@
 - (void)processIncomingIPCMessage:(MIDIMessage *)message
 {
     [self.midiClient sendMessage:message];
+    [self.logWindowController logOutgoingMessage:message];
     _signalCount++;
 }
 

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F8CBACC1825D2760049F20D /* LogWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F8CBACA1825D2760049F20D /* LogWindowController.m */; };
+		0F8CBACD1825D2760049F20D /* LogWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8CBACB1825D2760049F20D /* LogWindow.xib */; };
+		0F8CBAD01825DFA90049F20D /* LogPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F8CBACF1825DFA90049F20D /* LogPanel.m */; };
 		0FB721431824DD5B00E244FE /* MIDIClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 0FB721421824DD5B00E244FE /* MIDIClient.m */; };
 		0FD64F3318238780000BA60B /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FD64F3218238780000BA60B /* Cocoa.framework */; };
 		0FD64F3D18238780000BA60B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 0FD64F3B18238780000BA60B /* InfoPlist.strings */; };
@@ -33,6 +36,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		0F8CBAC91825D2760049F20D /* LogWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogWindowController.h; sourceTree = "<group>"; };
+		0F8CBACA1825D2760049F20D /* LogWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogWindowController.m; sourceTree = "<group>"; };
+		0F8CBACB1825D2760049F20D /* LogWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogWindow.xib; sourceTree = "<group>"; };
+		0F8CBACE1825DFA90049F20D /* LogPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogPanel.h; sourceTree = "<group>"; };
+		0F8CBACF1825DFA90049F20D /* LogPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogPanel.m; sourceTree = "<group>"; };
 		0FB721411824DD5B00E244FE /* MIDIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIDIClient.h; sourceTree = "<group>"; };
 		0FB721421824DD5B00E244FE /* MIDIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIDIClient.m; sourceTree = "<group>"; };
 		0FD64F2F18238780000BA60B /* MIDIBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MIDIBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -133,6 +141,11 @@
 				0FD64F6C1823A2DB000BA60B /* IPCRouter.m */,
 				0FB721411824DD5B00E244FE /* MIDIClient.h */,
 				0FB721421824DD5B00E244FE /* MIDIClient.m */,
+				0F8CBAC91825D2760049F20D /* LogWindowController.h */,
+				0F8CBACA1825D2760049F20D /* LogWindowController.m */,
+				0F8CBACB1825D2760049F20D /* LogWindow.xib */,
+				0F8CBACE1825DFA90049F20D /* LogPanel.h */,
+				0F8CBACF1825DFA90049F20D /* LogPanel.m */,
 			);
 			path = MIDIBridge;
 			sourceTree = "<group>";
@@ -229,6 +242,7 @@
 				0FD64F3D18238780000BA60B /* InfoPlist.strings in Resources */,
 				0FD64F4B18238780000BA60B /* Images.xcassets in Resources */,
 				0FD64F4318238780000BA60B /* Credits.rtf in Resources */,
+				0F8CBACD1825D2760049F20D /* LogWindow.xib in Resources */,
 				0FD64F4918238780000BA60B /* MainMenu.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -251,6 +265,8 @@
 				0FD64F6A18239F1C000BA60B /* MIDIMessage.m in Sources */,
 				0FD64F6D1823A2DB000BA60B /* IPCRouter.m in Sources */,
 				0FD64F4618238780000BA60B /* MIDIBridgeAppDelegate.m in Sources */,
+				0F8CBAD01825DFA90049F20D /* LogPanel.m in Sources */,
+				0F8CBACC1825D2760049F20D /* LogWindowController.m in Sources */,
 				0FD64F3F18238780000BA60B /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
