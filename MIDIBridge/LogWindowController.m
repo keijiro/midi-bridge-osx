@@ -2,19 +2,6 @@
 #import "MIDIMessage.h"
 #import "MIDIEndpoint.h"
 
-@interface LogWindowController ()
-
-@property (assign) IBOutlet NSTableView *inLogTable;
-@property (assign) IBOutlet NSTableView *outLogTable;
-
-@property (assign) NSUInteger maxLogCount;
-
-@property (strong) NSMutableArray *inMessageLog;
-@property (strong) NSMutableArray *inSourceLog;
-@property (strong) NSMutableArray *outMessageLog;
-
-@end
-
 #pragma mark Local functions
 
 static const char *statusByteToCString(Byte b)
@@ -33,6 +20,21 @@ static const char *statusByteToCString(Byte b)
 }
 
 #pragma mark
+#pragma mark Private properties
+
+@interface LogWindowController ()
+
+@property (assign) IBOutlet NSTableView *inLogTable;
+@property (assign) IBOutlet NSTableView *outLogTable;
+
+@property (assign) NSUInteger maxLogCount;
+@property (strong) NSMutableArray *inSourceLog;
+@property (strong) NSMutableArray *inMessageLog;
+@property (strong) NSMutableArray *outMessageLog;
+
+@end
+
+#pragma mark
 #pragma mark Log window controller class implementation
 
 @implementation LogWindowController
@@ -41,17 +43,12 @@ static const char *statusByteToCString(Byte b)
 {
     self = [super initWithWindow:window];
     if (self) {
-        self.maxLogCount = 32;
-        self.inMessageLog = [[NSMutableArray alloc] init];
+        self.maxLogCount = 64;
         self.inSourceLog = [[NSMutableArray alloc] init];
+        self.inMessageLog = [[NSMutableArray alloc] init];
         self.outMessageLog = [[NSMutableArray alloc] init];
     }
     return self;
-}
-
-- (void)windowDidLoad
-{
-    [super windowDidLoad];
 }
 
 - (IBAction)showWindow:(id)sender
@@ -62,15 +59,16 @@ static const char *statusByteToCString(Byte b)
     [super showWindow:sender];
 }
 
-#pragma mark Logger functions
+#pragma mark Logging functions
 
 - (void)logIncomingMessage:(MIDIMessage *)message from:(MIDIEndpoint *)source
 {
-    [self.inMessageLog insertObject:message atIndex:0];
     [self.inSourceLog insertObject:source atIndex:0];
+    [self.inMessageLog insertObject:message atIndex:0];
+    
     if (self.inMessageLog.count > _maxLogCount) {
-        [self.inMessageLog removeLastObject];
         [self.inSourceLog removeLastObject];
+        [self.inMessageLog removeLastObject];
     }
     // Reload the data only if the window is visible.
     if (self.window.isVisible) [self.inLogTable reloadData];
@@ -95,25 +93,35 @@ static const char *statusByteToCString(Byte b)
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
+    // Source column.
     if ([tableColumn.identifier isEqualToString:@"source"]) {
         MIDIEndpoint *source = [self.inSourceLog objectAtIndex:rowIndex];
         return [NSString stringWithFormat:@"%@", source.displayName];
     }
     
+    // Incomming or outgoing?
     MIDIMessage *message;
-    
     if (tableView.tag == 0) {
         message = [self.inMessageLog objectAtIndex:rowIndex];
     } else {
         message = [self.outMessageLog objectAtIndex:rowIndex];
     }
     
+    // Channel column.
     if ([tableColumn.identifier isEqualToString:@"channel"]) {
         return [NSString stringWithFormat:@"%d", (message.status & 0xf)];
-    } else if ([tableColumn.identifier isEqualToString:@"event"]) {
+    }
+    
+    // Event column.
+    if ([tableColumn.identifier isEqualToString:@"event"]) {
         return [NSString stringWithUTF8String:statusByteToCString(message.status)];
-    } else {
+    }
+    
+    // Data column
+    if (message.length > 2) {
         return [NSString stringWithFormat:@"%d, %d", message.data1, message.data2];
+    } else {
+        return [NSString stringWithFormat:@"%d", message.data1];
     }
 }
 
