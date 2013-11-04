@@ -1,5 +1,4 @@
 #import <Foundation/Foundation.h>
-#import <CoreMIDI/CoreMIDI.h>
 
 @class MIDIMessage;
 @class MIDIEndpoint;
@@ -23,7 +22,7 @@
 #pragma mark
 #pragma mark Delegate methods for MIDIClient
 
-@interface NSObject(MIDIClientDelegateMethods)
+@interface NSObject (MIDIClientDelegateMethods)
 - (void)resetMIDIStatus;
 - (void)processIncomingMIDIMessage:(MIDIMessage *)message from:(MIDIEndpoint *)source;
 @end

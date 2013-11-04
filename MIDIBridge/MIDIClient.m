@@ -9,9 +9,8 @@
     MIDIClientRef _midiClient;
     MIDIPortRef _midiInputPort;
     MIDIPortRef _midiOutputPort;
+    NSMutableArray *_sources;
 }
-
-@property (strong) NSMutableArray *sources;
 
 - (void)reset;
 
@@ -76,6 +75,11 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
     return self;
 }
 
+- (void)dealloc
+{
+    if (_midiClient) MIDIClientDispose(_midiClient);
+}
+
 - (void)reset
 {
     // Dispose the client if already initialized.
@@ -90,13 +94,13 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
     
     // Enumerate the all MIDI sources.
     ItemCount sourceCount = MIDIGetNumberOfSources();
-    self.sources = [[NSMutableArray alloc] initWithCapacity:sourceCount];
+    _sources = [[NSMutableArray alloc] initWithCapacity:sourceCount];
     
     for (int i = 0; i < sourceCount; i++) {
         // Connect the MIDI source to the input port.
         MIDIEndpointRef endpoint = MIDIGetSource(i);
         MIDIEndpoint *source = [[MIDIEndpoint alloc] initWithEndpointRef:endpoint];
-        [self.sources addObject:source];
+        [_sources addObject:source];
         MIDIPortConnectSource(_midiInputPort, endpoint, (__bridge void *)(source));
     }
     
@@ -129,9 +133,8 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
 
 - (NSString *)getSourceDisplayName:(NSUInteger)number
 {
-    CFStringRef name;
-    MIDIObjectGetStringProperty(MIDIGetSource(number), kMIDIPropertyDisplayName, &name);
-    return (NSString*)CFBridgingRelease(name);
+    MIDIEndpoint *source = [_sources objectAtIndex:number];
+    return source.displayName;
 }
 
 - (NSString *)getDestinationDisplayName:(NSUInteger)number
