@@ -96,10 +96,10 @@
     [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Quit MIDIBridge" action:@selector(terminate:) keyEquivalent:@""]];
 }
 
-- (void)processIncomingMIDIMessage:(MIDIMessage *)message
+- (void)processIncomingMIDIMessage:(MIDIMessage *)message from:(MIDISource *)source
 {
     [self.ipcRouter sendMessage:message];
-    [self.logWindowController logIncomingMessage:message];
+    [self.logWindowController logIncomingMessage:message from:source];
     _signalCount++;
 }
 

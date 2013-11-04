@@ -2,6 +2,7 @@
 #import <CoreMIDI/CoreMIDI.h>
 
 @class MIDIMessage;
+@class MIDISource;
 
 #pragma mark MIDI client class definition
 
@@ -10,13 +11,13 @@
     MIDIClientRef _midiClient;
     MIDIPortRef _midiInputPort;
     MIDIPortRef _midiOutputPort;
-    MIDIUniqueID _sourceIDs[64];
 }
 
 @property (weak) id delegate;
 @property (readonly) NSUInteger sourceCount;
 @property (readonly) NSUInteger destinationCount;
 @property (assign) NSInteger defaultDestination;
+@property (strong) NSMutableArray *sources;
 
 - (id)initWithDelegate:(id)delegate;
 - (void)sendMessage:(MIDIMessage *)message;
@@ -30,5 +31,5 @@
 
 @interface NSObject(MIDIClientDelegateMethods)
 - (void)resetMIDIStatus;
-- (void)processIncomingMIDIMessage:(MIDIMessage *)message;
+- (void)processIncomingMIDIMessage:(MIDIMessage *)message from:(MIDISource *)source;
 @end

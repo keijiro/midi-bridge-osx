@@ -1,16 +1,8 @@
 #import "MIDIMessage.h"
 #import <CoreFoundation/CoreFoundation.h>
+#import <CoreMIDI/CoreMIDI.h>
 
 @implementation MIDIMessage
-
-- (id)initWithSource:(MIDIUniqueID)sourceID
-{
-    self = [super init];
-    if (self) {
-        self.sourceID = sourceID;
-    }
-    return self;
-}
 
 - (id)initWithBytes:(const Byte *)bytes
 {

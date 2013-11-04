@@ -1,5 +1,6 @@
 #import "MIDIClient.h"
 #import "MIDIMessage.h"
+#import "MIDISource.h"
 
 #pragma mark Private method declaration
 
@@ -33,18 +34,18 @@ static void StateChangedHander(const MIDINotification* message, void* refCon)
 static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, void *srcConnRefCon)
 {
     MIDIClient *client = (__bridge MIDIClient *)(readProcRefCon);
-    MIDIUniqueID sourceID = *(MIDIUniqueID *)srcConnRefCon;
+    MIDISource *source = (__bridge MIDISource *)(srcConnRefCon);
     
     // Transform the packets into MIDI messages and push it to the message queue.
     const MIDIPacket *packet = &packetList->packet[0];
     for (int packetCount = 0; packetCount < packetList->numPackets; packetCount++) {
         // Extract MIDI messages from the data stream.
         for (int offs = 0; offs < packet->length;) {
-            MIDIMessage *message = [[MIDIMessage alloc] initWithSource:sourceID];
+            MIDIMessage *message = [[MIDIMessage alloc] init];
             offs = [message readPacket:packet dataOffset:offs];
             // Call the delegate method.
             dispatch_async(dispatch_get_main_queue(), ^{
-                [client.delegate processIncomingMIDIMessage:message];
+                [client.delegate processIncomingMIDIMessage:message from:source];
             });
         }
         packet = MIDIPacketNext(packet);
@@ -80,13 +81,14 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
     
     // Enumerate the all MIDI sources.
     ItemCount sourceCount = MIDIGetNumberOfSources();
-    NSAssert(sourceCount < sizeof(_sourceIDs) / sizeof(MIDIUniqueID), @"Too many MIDI sources.");
+    self.sources = [[NSMutableArray alloc] initWithCapacity:sourceCount];
     
     for (int i = 0; i < sourceCount; i++) {
         // Connect the MIDI source to the input port.
-        MIDIEndpointRef source = MIDIGetSource(i);
-        MIDIObjectGetIntegerProperty(source, kMIDIPropertyUniqueID, &_sourceIDs[i]);
-        MIDIPortConnectSource(_midiInputPort, source, &_sourceIDs[i]);
+        MIDIEndpointRef endpoint = MIDIGetSource(i);
+        MIDISource *source = [[MIDISource alloc] initWithEndpoint:endpoint];
+        [self.sources addObject:source];
+        MIDIPortConnectSource(_midiInputPort, endpoint, (__bridge void *)(source));
     }
     
     // FIXME: choose a default destination properly.
