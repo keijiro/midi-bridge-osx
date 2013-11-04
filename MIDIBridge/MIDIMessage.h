@@ -8,7 +8,7 @@
     Byte _data2;
 }
 
-- (void)readBytes:(const Byte *)bytes length:(NSUInteger)length;
+- (NSUInteger)readBytes:(const Byte *)bytes length:(NSUInteger)length;
 - (NSUInteger)readPacket:(const struct MIDIPacket *)packet offset:(NSUInteger)offset;
 
 @property (readonly) Byte *bytes;

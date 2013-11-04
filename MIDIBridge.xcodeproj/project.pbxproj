@@ -34,7 +34,7 @@
 		0F8CBACF1825DFA90049F20D /* LogPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogPanel.m; sourceTree = "<group>"; };
 		0FB721411824DD5B00E244FE /* MIDIClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIDIClient.h; sourceTree = "<group>"; };
 		0FB721421824DD5B00E244FE /* MIDIClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIDIClient.m; sourceTree = "<group>"; };
-		0FD64F2F18238780000BA60B /* MIDIBridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MIDIBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0FD64F2F18238780000BA60B /* MIDI Bridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "MIDI Bridge.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0FD64F3218238780000BA60B /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		0FD64F3518238780000BA60B /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		0FD64F3618238780000BA60B /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -81,7 +81,7 @@
 		0FD64F3018238780000BA60B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0FD64F2F18238780000BA60B /* MIDIBridge.app */,
+				0FD64F2F18238780000BA60B /* MIDI Bridge.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -110,6 +110,8 @@
 		0FD64F3818238780000BA60B /* MIDIBridge */ = {
 			isa = PBXGroup;
 			children = (
+				0FD64F6B1823A2DB000BA60B /* IPCRouter.h */,
+				0FD64F6C1823A2DB000BA60B /* IPCRouter.m */,
 				0F8CBAC91825D2760049F20D /* LogWindowController.h */,
 				0F8CBACA1825D2760049F20D /* LogWindowController.m */,
 				0F8CBACB1825D2760049F20D /* LogWindow.xib */,
@@ -126,8 +128,6 @@
 				0FD64F4718238780000BA60B /* MainMenu.xib */,
 				0FD64F4A18238780000BA60B /* Images.xcassets */,
 				0FD64F3918238780000BA60B /* Supporting Files */,
-				0FD64F6B1823A2DB000BA60B /* IPCRouter.h */,
-				0FD64F6C1823A2DB000BA60B /* IPCRouter.m */,
 			);
 			path = MIDIBridge;
 			sourceTree = "<group>";
@@ -161,7 +161,7 @@
 			);
 			name = "MIDI Bridge";
 			productName = MIDIBridge;
-			productReference = 0FD64F2F18238780000BA60B /* MIDIBridge.app */;
+			productReference = 0FD64F2F18238780000BA60B /* MIDI Bridge.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

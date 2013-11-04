@@ -16,12 +16,20 @@
 
 #pragma mark Reader methods
 
-- (void)readBytes:(const Byte *)bytes length:(NSUInteger)length
+- (NSUInteger)readBytes:(const Byte *)bytes length:(NSUInteger)length
 {
     NSAssert(length >= 2, @"Invalid data length.");
+    
     _status = bytes[0];
     _data1 = bytes[1];
-    _data2 = (length > 2) ? bytes[2] : 0x80;
+    
+    if (length == 2 || bytes[2] > 0x7f) {
+        _data2 = 0x80;
+        return 2;
+    } else {
+        _data2 = bytes[2];
+        return 3;
+    }
 }
 
 - (NSUInteger)readPacket:(const MIDIPacket *)packet offset:(NSUInteger)offset
