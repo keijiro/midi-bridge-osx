@@ -24,17 +24,16 @@ static const char *statusByteToCString(Byte b)
 
 @interface LogWindowController ()
 {
+    NSUInteger _maxLogCount;
     NSUInteger _inLogCount;
     NSUInteger _outLogCount;
+    NSMutableArray *_inSourceLog;
+    NSMutableArray *_inMessageLog;
+    NSMutableArray *_outMessageLog;
 }
 
 @property (assign) IBOutlet NSTableView *inLogTable;
 @property (assign) IBOutlet NSTableView *outLogTable;
-
-@property (assign) NSUInteger maxLogCount;
-@property (strong) NSMutableArray *inSourceLog;
-@property (strong) NSMutableArray *inMessageLog;
-@property (strong) NSMutableArray *outMessageLog;
 
 @end
 
@@ -48,9 +47,9 @@ static const char *statusByteToCString(Byte b)
     self = [super initWithWindow:window];
     if (self) {
         _maxLogCount = 64;
-        self.inSourceLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
-        self.inMessageLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
-        self.outMessageLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
+        _inSourceLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
+        _inMessageLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
+        _outMessageLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
     }
     return self;
 }
@@ -68,12 +67,12 @@ static const char *statusByteToCString(Byte b)
 - (void)logIncomingMessage:(MIDIMessage *)message from:(MIDIEndpoint *)source
 {
     if (_inLogCount < _maxLogCount) {
-        [self.inSourceLog addObject:source];
-        [self.inMessageLog addObject:message];
+        [_inSourceLog addObject:source];
+        [_inMessageLog addObject:message];
     } else {
         NSUInteger index = _inLogCount % _maxLogCount;
-        [self.inSourceLog replaceObjectAtIndex:index withObject:source];
-        [self.inMessageLog replaceObjectAtIndex:index withObject:message];
+        [_inSourceLog replaceObjectAtIndex:index withObject:source];
+        [_inMessageLog replaceObjectAtIndex:index withObject:message];
     }
     _inLogCount++;
     
@@ -84,10 +83,10 @@ static const char *statusByteToCString(Byte b)
 - (void)logOutgoingMessage:(MIDIMessage *)message
 {
     if (_outLogCount < _maxLogCount) {
-        [self.outMessageLog addObject:message];
+        [_outMessageLog addObject:message];
     } else {
         NSUInteger index = _inLogCount % _maxLogCount;
-        [self.outMessageLog replaceObjectAtIndex:index withObject:message];
+        [_outMessageLog replaceObjectAtIndex:index withObject:message];
     }
     _outLogCount++;
     
@@ -99,7 +98,7 @@ static const char *statusByteToCString(Byte b)
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)tableView
 {
-    return (tableView.tag == 0) ? self.inMessageLog.count : self.outMessageLog.count;
+    return (tableView.tag == 0) ? _inMessageLog.count : _outMessageLog.count;
 }
 
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
@@ -107,7 +106,7 @@ static const char *statusByteToCString(Byte b)
     // Source column.
     if ([tableColumn.identifier isEqualToString:@"source"]) {
         NSUInteger index = (_inLogCount - rowIndex - 1) % _maxLogCount;
-        MIDIEndpoint *source = [self.inSourceLog objectAtIndex:index];
+        MIDIEndpoint *source = [_inSourceLog objectAtIndex:index];
         return [NSString stringWithFormat:@"%@", source.displayName];
     }
     
@@ -115,10 +114,10 @@ static const char *statusByteToCString(Byte b)
     MIDIMessage *message;
     if (tableView.tag == 0) {
         NSUInteger index = (_inLogCount - rowIndex - 1) % _maxLogCount;
-        message = [self.inMessageLog objectAtIndex:index];
+        message = [_inMessageLog objectAtIndex:index];
     } else {
         NSUInteger index = (_outLogCount - rowIndex - 1) % _maxLogCount;
-        message = [self.outMessageLog objectAtIndex:index];
+        message = [_outMessageLog objectAtIndex:index];
     }
     
     // Channel column.
