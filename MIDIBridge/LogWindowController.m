@@ -23,6 +23,10 @@ static const char *statusByteToCString(Byte b)
 #pragma mark Private properties
 
 @interface LogWindowController ()
+{
+    NSUInteger _inLogCount;
+    NSUInteger _outLogCount;
+}
 
 @property (assign) IBOutlet NSTableView *inLogTable;
 @property (assign) IBOutlet NSTableView *outLogTable;
@@ -43,10 +47,10 @@ static const char *statusByteToCString(Byte b)
 {
     self = [super initWithWindow:window];
     if (self) {
-        self.maxLogCount = 64;
-        self.inSourceLog = [[NSMutableArray alloc] init];
-        self.inMessageLog = [[NSMutableArray alloc] init];
-        self.outMessageLog = [[NSMutableArray alloc] init];
+        _maxLogCount = 64;
+        self.inSourceLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
+        self.inMessageLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
+        self.outMessageLog = [[NSMutableArray alloc] initWithCapacity:_maxLogCount];
     }
     return self;
 }
@@ -63,23 +67,30 @@ static const char *statusByteToCString(Byte b)
 
 - (void)logIncomingMessage:(MIDIMessage *)message from:(MIDIEndpoint *)source
 {
-    [self.inSourceLog insertObject:source atIndex:0];
-    [self.inMessageLog insertObject:message atIndex:0];
-    
-    if (self.inMessageLog.count > _maxLogCount) {
-        [self.inSourceLog removeLastObject];
-        [self.inMessageLog removeLastObject];
+    if (_inLogCount < _maxLogCount) {
+        [self.inSourceLog addObject:source];
+        [self.inMessageLog addObject:message];
+    } else {
+        NSUInteger index = _inLogCount % _maxLogCount;
+        [self.inSourceLog replaceObjectAtIndex:index withObject:source];
+        [self.inMessageLog replaceObjectAtIndex:index withObject:message];
     }
+    _inLogCount++;
+    
     // Reload the data only if the window is visible.
     if (self.window.isVisible) [self.inLogTable reloadData];
 }
 
 - (void)logOutgoingMessage:(MIDIMessage *)message
 {
-    [self.outMessageLog insertObject:message atIndex:0];
-    if (self.outMessageLog.count > _maxLogCount) {
-        [self.outMessageLog removeLastObject];
+    if (_outLogCount < _maxLogCount) {
+        [self.outMessageLog addObject:message];
+    } else {
+        NSUInteger index = _inLogCount % _maxLogCount;
+        [self.outMessageLog replaceObjectAtIndex:index withObject:message];
     }
+    _outLogCount++;
+    
     // Reload the data only if the window is visible.
     if (self.window.isVisible) [self.outLogTable reloadData];
 }
@@ -95,16 +106,19 @@ static const char *statusByteToCString(Byte b)
 {
     // Source column.
     if ([tableColumn.identifier isEqualToString:@"source"]) {
-        MIDIEndpoint *source = [self.inSourceLog objectAtIndex:rowIndex];
+        NSUInteger index = (_inLogCount - rowIndex - 1) % _maxLogCount;
+        MIDIEndpoint *source = [self.inSourceLog objectAtIndex:index];
         return [NSString stringWithFormat:@"%@", source.displayName];
     }
     
     // Incomming or outgoing?
     MIDIMessage *message;
     if (tableView.tag == 0) {
-        message = [self.inMessageLog objectAtIndex:rowIndex];
+        NSUInteger index = (_inLogCount - rowIndex - 1) % _maxLogCount;
+        message = [self.inMessageLog objectAtIndex:index];
     } else {
-        message = [self.outMessageLog objectAtIndex:rowIndex];
+        NSUInteger index = (_outLogCount - rowIndex - 1) % _maxLogCount;
+        message = [self.outMessageLog objectAtIndex:index];
     }
     
     // Channel column.
