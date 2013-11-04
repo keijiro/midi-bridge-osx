@@ -8,7 +8,18 @@
 #define MIDI_OUT_PORT 52365
 
 #pragma mark
-#pragma mark IPC router class implementation
+#pragma mark Private members
+
+@interface IPCRouter ()
+{
+    int _inSocket;
+    int _outSocket;
+    dispatch_source_t _outSource;
+}
+
+@end
+
+#pragma mark Class implementation
 
 @implementation IPCRouter
 
@@ -55,10 +66,10 @@
             size_t estimated = dispatch_source_get_data(_outSource);
             Byte buffer[estimated];
             recv(_outSocket, buffer, estimated, 0);
-            
+            // Read a message.
             MIDIMessage *message = [[MIDIMessage alloc] init];
             [message readBytes:buffer length:estimated];
-            
+            // Process the message on the main thread.
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate processIncomingIPCMessage:message];
             });
