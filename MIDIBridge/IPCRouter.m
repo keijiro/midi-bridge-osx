@@ -29,7 +29,7 @@
             addr.sin_addr.s_addr = htonl(INADDR_ANY);
             addr.sin_port = 0;
             
-            int err = bind(_inSocket, (struct sockaddr *)&addr, sizeof(addr));
+            int err __attribute__((unused)) = bind(_inSocket, (struct sockaddr *)&addr, sizeof(addr));
             NSAssert(err == 0, @"Failed to bind a socket (%d).", errno);
         }
         
@@ -44,7 +44,7 @@
             addr.sin_addr.s_addr = htonl(INADDR_ANY);
             addr.sin_port = htons(MIDI_OUT_PORT);
             
-            int err = bind(_outSocket, (struct sockaddr *)&addr, sizeof(addr));
+            int err __attribute__((unused)) = bind(_outSocket, (struct sockaddr *)&addr, sizeof(addr));
             NSAssert(err == 0, @"Failed to bind a socket (%d).", errno);
         }
 
