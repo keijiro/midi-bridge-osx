@@ -2,10 +2,19 @@
 #import "MIDIMessage.h"
 #import "MIDIEndpoint.h"
 
-#pragma mark Private method declaration
+#pragma mark Private members
 
-@interface MIDIClient(PrivateMethod)
+@interface MIDIClient ()
+{
+    MIDIClientRef _midiClient;
+    MIDIPortRef _midiInputPort;
+    MIDIPortRef _midiOutputPort;
+}
+
+@property (strong) NSMutableArray *sources;
+
 - (void)reset;
+
 @end
 
 #pragma mark
