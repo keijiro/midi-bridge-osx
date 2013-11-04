@@ -14,6 +14,8 @@
     return (_data2 & 0x80) ? 2 : 3;
 }
 
+#pragma mark Reader methods
+
 - (void)readBytes:(const Byte *)bytes length:(NSUInteger)length
 {
     NSAssert(length >= 2, @"Invalid data length.");
