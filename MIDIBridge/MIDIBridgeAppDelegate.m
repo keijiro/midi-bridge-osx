@@ -1,15 +1,19 @@
 #import "MIDIBridgeAppDelegate.h"
-#import "MIDIMessage.h"
 #import "MIDIClient.h"
 #import "IPCRouter.h"
 #import "LogWindowController.h"
 
-#pragma mark Private properties
+#pragma mark Private members
 
 @interface MIDIBridgeAppDelegate ()
-@property (strong) MIDIClient *midiClient;
-@property (strong) IPCRouter *ipcRouter;
-@property (strong) LogWindowController *logWindowController;
+{
+    MIDIClient *_midiClient;
+    IPCRouter *_ipcRouter;
+    LogWindowController *_logWindowController;
+    
+    NSStatusItem *_statusItem;
+    NSInteger _signalCount;
+}
 @end
 
 #pragma mark
@@ -19,22 +23,25 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    self.midiClient = [[MIDIClient alloc] initWithDelegate:self];
-    self.ipcRouter = [[IPCRouter alloc] initWithDelegate:self];
-
-    self.statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
-    self.logWindowController = [[LogWindowController alloc] initWithWindowNibName:@"LogWindow"];
-
-    [self resetMIDIStatus];
+    _midiClient = [[MIDIClient alloc] initWithDelegate:self];
+    _ipcRouter = [[IPCRouter alloc] initWithDelegate:self];
+    _logWindowController = [[LogWindowController alloc] initWithWindowNibName:@"LogWindow"];
     
-    [NSTimer scheduledTimerWithTimeInterval:0.25f target:self selector:@selector(updateIndicator) userInfo:nil repeats:YES];
+    // Create a status item and its menu.
+    _statusItem = [[NSStatusBar systemStatusBar] statusItemWithLength:NSVariableStatusItemLength];
+    _statusItem.menu = [self statusMenuWithCurrentState];
+    _statusItem.image = [NSImage imageNamed:@"Status"];
+    _statusItem.alternateImage = [NSImage imageNamed:@"StatusHighlighted"];
+    _statusItem.highlightMode = YES;
+    
+    [NSTimer scheduledTimerWithTimeInterval:0.2f target:self selector:@selector(updateIndicator) userInfo:nil repeats:YES];
 }
 
-#pragma mark UI Actions
+#pragma mark UI actions
 
 - (void)openLogView:(id)sender
 {
-    [self.logWindowController showWindow:nil];
+    [_logWindowController showWindow:nil];
 }
 
 - (void)selectSourceItem:(id)sender
@@ -43,63 +50,21 @@
 
 - (void)selectDestinationItem:(id)sender
 {
-    self.midiClient.defaultDestination = [sender tag];
-    [self resetMIDIStatus];
-}
-
-- (void)updateIndicator
-{
-    NSString *imageName = (_signalCount == 0) ? @"Status" : @"StatusActive";
-    self.statusItem.image = [NSImage imageNamed:imageName];
-    _signalCount = 0;
+    _midiClient.defaultDestination = [sender tag];
+    _statusItem.menu = [self statusMenuWithCurrentState];
 }
 
 #pragma mark MIDIClient delegate methods
 
 - (void)resetMIDIStatus
 {
-    self.statusMenu = [[NSMenu alloc] init];
-    [self.statusItem setMenu:self.statusMenu];
-    
-    self.statusItem.image = [NSImage imageNamed:@"Status"];
-    self.statusItem.alternateImage = [NSImage imageNamed:@"StatusHighlighted"];
-    [self.statusItem setHighlightMode:YES];
-    
-    [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Open Log Viewer..." action:@selector(openLogView:) keyEquivalent:@""]];
-    
-    [self.statusMenu addItem:[NSMenuItem separatorItem]];
-    
-    if (self.midiClient.sourceCount == 0) {
-        [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"No MIDI Sources" action:NULL keyEquivalent:@""]];
-    } else {
-        [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"MIDI Sources" action:NULL keyEquivalent:@""]];
-        for (NSUInteger i = 0; i < self.midiClient.sourceCount; i++) {
-            [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:[self.midiClient getSourceDisplayName:i] action:@selector(selectSourceItem:) keyEquivalent:@""]];
-        }
-    }
-    
-    [self.statusMenu addItem:[NSMenuItem separatorItem]];
-
-    if (self.midiClient.destinationCount == 0) {
-        [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"No MIDI Destinations" action:NULL keyEquivalent:@""]];
-    } else {
-        [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"MIDI Destinations" action:NULL keyEquivalent:@""]];
-        for (NSUInteger i = 0; i < self.midiClient.destinationCount; i++) {
-            NSMenuItem *item =[[NSMenuItem alloc] initWithTitle:[self.midiClient getDestinationDisplayName:i] action:@selector(selectDestinationItem:) keyEquivalent:@""];
-            item.tag = i;
-            if (i == self.midiClient.defaultDestination) item.state = NSOnState;
-            [self.statusMenu addItem:item];
-        }
-    }
-
-    [self.statusMenu addItem:[NSMenuItem separatorItem]];
-    [self.statusMenu addItem:[[NSMenuItem alloc] initWithTitle:@"Quit MIDIBridge" action:@selector(terminate:) keyEquivalent:@""]];
+    _statusItem.menu = [self statusMenuWithCurrentState];
 }
 
 - (void)processIncomingMIDIMessage:(MIDIMessage *)message from:(MIDIEndpoint *)source
 {
-    [self.ipcRouter sendMessage:message];
-    [self.logWindowController logIncomingMessage:message from:source];
+    [_ipcRouter sendMessage:message];
+    [_logWindowController logIncomingMessage:message from:source];
     _signalCount++;
 }
 
@@ -107,9 +72,53 @@
 
 - (void)processIncomingIPCMessage:(MIDIMessage *)message
 {
-    [self.midiClient sendMessage:message];
-    [self.logWindowController logOutgoingMessage:message];
+    [_midiClient sendMessage:message];
+    [_logWindowController logOutgoingMessage:message];
     _signalCount++;
+}
+
+#pragma mark Status menu handlers
+
+- (NSMenu *)statusMenuWithCurrentState
+{
+    NSMenu *menu = [[NSMenu alloc] init];
+    
+    [menu addItem:[[NSMenuItem alloc] initWithTitle:@"Open Log Viewer..." action:@selector(openLogView:) keyEquivalent:@""]];
+    [menu addItem:[NSMenuItem separatorItem]];
+    
+    if (_midiClient.sourceCount == 0) {
+        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"No MIDI Sources" action:NULL keyEquivalent:@""]];
+    } else {
+        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"MIDI Sources" action:NULL keyEquivalent:@""]];
+        for (NSUInteger i = 0; i < _midiClient.sourceCount; i++) {
+            [menu addItem:[[NSMenuItem alloc] initWithTitle:[_midiClient getSourceDisplayName:i] action:@selector(selectSourceItem:) keyEquivalent:@""]];
+        }
+    }
+    [menu addItem:[NSMenuItem separatorItem]];
+    
+    if (_midiClient.destinationCount == 0) {
+        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"No MIDI Destinations" action:NULL keyEquivalent:@""]];
+    } else {
+        [menu addItem:[[NSMenuItem alloc] initWithTitle:@"MIDI Destinations" action:NULL keyEquivalent:@""]];
+        for (NSUInteger i = 0; i < _midiClient.destinationCount; i++) {
+            NSMenuItem *item =[[NSMenuItem alloc] initWithTitle:[_midiClient getDestinationDisplayName:i] action:@selector(selectDestinationItem:) keyEquivalent:@""];
+            item.tag = i;
+            if (i == _midiClient.defaultDestination) item.state = NSOnState;
+            [menu addItem:item];
+        }
+    }
+    [menu addItem:[NSMenuItem separatorItem]];
+    
+    [menu addItem:[[NSMenuItem alloc] initWithTitle:@"Quit MIDIBridge" action:@selector(terminate:) keyEquivalent:@""]];
+    
+    return menu;
+}
+
+- (void)updateIndicator
+{
+    NSString *imageName = (_signalCount == 0) ? @"Status" : @"StatusActive";
+    _statusItem.image = [NSImage imageNamed:imageName];
+    _signalCount = 0;
 }
 
 @end
