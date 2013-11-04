@@ -1,6 +1,18 @@
 #import "LogWindowController.h"
 #import "MIDIMessage.h"
 
+@interface LogWindowController ()
+
+@property (assign) IBOutlet NSTableView *inLogTable;
+@property (assign) IBOutlet NSTableView *outLogTable;
+
+@property (assign) NSUInteger maxLogCount;
+
+@property (strong) NSMutableArray *inLog;
+@property (strong) NSMutableArray *outLog;
+
+@end
+
 #pragma mark Local functions
 
 static const char *statusByteToCString(Byte b)
