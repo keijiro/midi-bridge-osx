@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F3C21EF18273CE000CF0C23 /* MIDISource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F3C21EE18273CE000CF0C23 /* MIDISource.m */; };
+		0F3C21EF18273CE000CF0C23 /* MIDIEndpoint.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F3C21EE18273CE000CF0C23 /* MIDIEndpoint.m */; };
 		0F8CBACC1825D2760049F20D /* LogWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F8CBACA1825D2760049F20D /* LogWindowController.m */; };
 		0F8CBACD1825D2760049F20D /* LogWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8CBACB1825D2760049F20D /* LogWindow.xib */; };
 		0F8CBAD01825DFA90049F20D /* LogPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0F8CBACF1825DFA90049F20D /* LogPanel.m */; };
@@ -37,8 +37,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0F3C21ED18273CE000CF0C23 /* MIDISource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIDISource.h; sourceTree = "<group>"; };
-		0F3C21EE18273CE000CF0C23 /* MIDISource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIDISource.m; sourceTree = "<group>"; };
+		0F3C21ED18273CE000CF0C23 /* MIDIEndpoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MIDIEndpoint.h; sourceTree = "<group>"; };
+		0F3C21EE18273CE000CF0C23 /* MIDIEndpoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MIDIEndpoint.m; sourceTree = "<group>"; };
 		0F8CBAC91825D2760049F20D /* LogWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LogWindowController.h; sourceTree = "<group>"; };
 		0F8CBACA1825D2760049F20D /* LogWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LogWindowController.m; sourceTree = "<group>"; };
 		0F8CBACB1825D2760049F20D /* LogWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LogWindow.xib; sourceTree = "<group>"; };
@@ -133,24 +133,24 @@
 		0FD64F3818238780000BA60B /* MIDIBridge */ = {
 			isa = PBXGroup;
 			children = (
-				0FD64F4418238780000BA60B /* MIDIBridgeAppDelegate.h */,
-				0FD64F4518238780000BA60B /* MIDIBridgeAppDelegate.m */,
-				0FD64F4718238780000BA60B /* MainMenu.xib */,
-				0FD64F4A18238780000BA60B /* Images.xcassets */,
-				0FD64F3918238780000BA60B /* Supporting Files */,
-				0FD64F6818239F1C000BA60B /* MIDIMessage.h */,
-				0FD64F6918239F1C000BA60B /* MIDIMessage.m */,
-				0F3C21ED18273CE000CF0C23 /* MIDISource.h */,
-				0F3C21EE18273CE000CF0C23 /* MIDISource.m */,
-				0FD64F6B1823A2DB000BA60B /* IPCRouter.h */,
-				0FD64F6C1823A2DB000BA60B /* IPCRouter.m */,
-				0FB721411824DD5B00E244FE /* MIDIClient.h */,
-				0FB721421824DD5B00E244FE /* MIDIClient.m */,
 				0F8CBAC91825D2760049F20D /* LogWindowController.h */,
 				0F8CBACA1825D2760049F20D /* LogWindowController.m */,
 				0F8CBACB1825D2760049F20D /* LogWindow.xib */,
 				0F8CBACE1825DFA90049F20D /* LogPanel.h */,
 				0F8CBACF1825DFA90049F20D /* LogPanel.m */,
+				0FD64F4418238780000BA60B /* MIDIBridgeAppDelegate.h */,
+				0FD64F4518238780000BA60B /* MIDIBridgeAppDelegate.m */,
+				0FB721411824DD5B00E244FE /* MIDIClient.h */,
+				0FB721421824DD5B00E244FE /* MIDIClient.m */,
+				0FD64F6818239F1C000BA60B /* MIDIMessage.h */,
+				0FD64F6918239F1C000BA60B /* MIDIMessage.m */,
+				0F3C21ED18273CE000CF0C23 /* MIDIEndpoint.h */,
+				0F3C21EE18273CE000CF0C23 /* MIDIEndpoint.m */,
+				0FD64F4718238780000BA60B /* MainMenu.xib */,
+				0FD64F4A18238780000BA60B /* Images.xcassets */,
+				0FD64F3918238780000BA60B /* Supporting Files */,
+				0FD64F6B1823A2DB000BA60B /* IPCRouter.h */,
+				0FD64F6C1823A2DB000BA60B /* IPCRouter.m */,
 			);
 			path = MIDIBridge;
 			sourceTree = "<group>";
@@ -269,7 +269,7 @@
 				0FB721431824DD5B00E244FE /* MIDIClient.m in Sources */,
 				0FD64F6A18239F1C000BA60B /* MIDIMessage.m in Sources */,
 				0FD64F6D1823A2DB000BA60B /* IPCRouter.m in Sources */,
-				0F3C21EF18273CE000CF0C23 /* MIDISource.m in Sources */,
+				0F3C21EF18273CE000CF0C23 /* MIDIEndpoint.m in Sources */,
 				0FD64F4618238780000BA60B /* MIDIBridgeAppDelegate.m in Sources */,
 				0F8CBAD01825DFA90049F20D /* LogPanel.m in Sources */,
 				0F8CBACC1825D2760049F20D /* LogWindowController.m in Sources */,

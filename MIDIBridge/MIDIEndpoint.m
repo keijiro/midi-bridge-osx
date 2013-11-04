@@ -1,8 +1,8 @@
-#import "MIDISource.h"
+#import "MIDIEndpoint.h"
 
-@implementation MIDISource
+@implementation MIDIEndpoint
 
-- (id)initWithEndpoint:(MIDIEndpointRef)endpoint
+- (id)initWithEndpointRef:(MIDIEndpointRef)endpoint
 {
     self = [super init];
     if (self) {

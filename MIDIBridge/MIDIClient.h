@@ -2,7 +2,7 @@
 #import <CoreMIDI/CoreMIDI.h>
 
 @class MIDIMessage;
-@class MIDISource;
+@class MIDIEndpoint;
 
 #pragma mark MIDI client class definition
 
@@ -31,5 +31,5 @@
 
 @interface NSObject(MIDIClientDelegateMethods)
 - (void)resetMIDIStatus;
-- (void)processIncomingMIDIMessage:(MIDIMessage *)message from:(MIDISource *)source;
+- (void)processIncomingMIDIMessage:(MIDIMessage *)message from:(MIDIEndpoint *)source;
 @end

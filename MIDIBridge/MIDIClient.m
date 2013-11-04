@@ -1,6 +1,6 @@
 #import "MIDIClient.h"
 #import "MIDIMessage.h"
-#import "MIDISource.h"
+#import "MIDIEndpoint.h"
 
 #pragma mark Private method declaration
 
@@ -34,7 +34,7 @@ static void StateChangedHander(const MIDINotification* message, void* refCon)
 static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, void *srcConnRefCon)
 {
     MIDIClient *client = (__bridge MIDIClient *)(readProcRefCon);
-    MIDISource *source = (__bridge MIDISource *)(srcConnRefCon);
+    MIDIEndpoint *source = (__bridge MIDIEndpoint *)(srcConnRefCon);
     
     // Transform the packets into MIDI messages and push it to the message queue.
     const MIDIPacket *packet = &packetList->packet[0];
@@ -86,7 +86,7 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
     for (int i = 0; i < sourceCount; i++) {
         // Connect the MIDI source to the input port.
         MIDIEndpointRef endpoint = MIDIGetSource(i);
-        MIDISource *source = [[MIDISource alloc] initWithEndpoint:endpoint];
+        MIDIEndpoint *source = [[MIDIEndpoint alloc] initWithEndpointRef:endpoint];
         [self.sources addObject:source];
         MIDIPortConnectSource(_midiInputPort, endpoint, (__bridge void *)(source));
     }

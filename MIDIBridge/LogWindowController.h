@@ -1,11 +1,11 @@
 #import <Cocoa/Cocoa.h>
 
 @class MIDIMessage;
-@class MIDISource;
+@class MIDIEndpoint;
 
 @interface LogWindowController : NSWindowController
 
-- (void)logIncomingMessage:(MIDIMessage *)message from:(MIDISource *)source;
+- (void)logIncomingMessage:(MIDIMessage *)message from:(MIDIEndpoint *)source;
 - (void)logOutgoingMessage:(MIDIMessage *)message;
 
 @end

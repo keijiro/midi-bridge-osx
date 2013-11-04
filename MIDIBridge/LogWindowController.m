@@ -1,6 +1,6 @@
 #import "LogWindowController.h"
 #import "MIDIMessage.h"
-#import "MIDISource.h"
+#import "MIDIEndpoint.h"
 
 @interface LogWindowController ()
 
@@ -64,7 +64,7 @@ static const char *statusByteToCString(Byte b)
 
 #pragma mark Logger functions
 
-- (void)logIncomingMessage:(MIDIMessage *)message from:(MIDISource *)source
+- (void)logIncomingMessage:(MIDIMessage *)message from:(MIDIEndpoint *)source
 {
     [self.inMessageLog insertObject:message atIndex:0];
     [self.inSourceLog insertObject:source atIndex:0];
@@ -96,7 +96,7 @@ static const char *statusByteToCString(Byte b)
 - (id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)rowIndex
 {
     if ([tableColumn.identifier isEqualToString:@"source"]) {
-        MIDISource *source = [self.inSourceLog objectAtIndex:rowIndex];
+        MIDIEndpoint *source = [self.inSourceLog objectAtIndex:rowIndex];
         return [NSString stringWithFormat:@"%@", source.displayName];
     }
     

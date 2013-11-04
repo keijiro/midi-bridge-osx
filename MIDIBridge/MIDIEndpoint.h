@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreMIDI/CoreMIDI.h>
 
-@interface MIDISource : NSObject
+@interface MIDIEndpoint : NSObject
 
 @property (strong) NSString *displayName;
 
-- (id)initWithEndpoint:(MIDIEndpointRef)endpoint;
+- (id)initWithEndpointRef:(MIDIEndpointRef)endpoint;
 
 @end
