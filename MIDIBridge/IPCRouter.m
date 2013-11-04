@@ -52,17 +52,16 @@
         dispatch_queue_t defaultQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         _outSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _outSocket, 0, defaultQueue);
         dispatch_source_set_event_handler(_outSource, ^{
-            Byte buffer[1024];
             size_t estimated = dispatch_source_get_data(_outSource);
+            Byte buffer[estimated];
             recv(_outSocket, buffer, estimated, 0);
             
-            MIDIMessage *message = [[MIDIMessage alloc] initWithBytes:buffer];
+            MIDIMessage *message = [[MIDIMessage alloc] init];
+            [message readBytes:buffer length:estimated];
             
-            if (estimated == 4) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.delegate processIncomingIPCMessage:message];
-                });
-            }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate processIncomingIPCMessage:message];
+            });
         });
         dispatch_resume(_outSource);
     }
@@ -78,9 +77,8 @@
         addr.sin_family = AF_INET;
         inet_aton("127.0.0.1", &(addr.sin_addr));
         addr.sin_port = htons(MIDI_IN_PORT);
-        
-        UInt32 data = message.packedData;
-        sendto(_inSocket, &data, sizeof(data), MSG_DONTWAIT, (struct sockaddr *)&addr, sizeof(addr));
+        // Send the data.
+        sendto(_inSocket, message.bytes, message.length, MSG_DONTWAIT, (struct sockaddr *)&addr, sizeof(addr));
     });
 }
 

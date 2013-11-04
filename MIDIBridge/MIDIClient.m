@@ -40,9 +40,9 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
     const MIDIPacket *packet = &packetList->packet[0];
     for (int packetCount = 0; packetCount < packetList->numPackets; packetCount++) {
         // Extract MIDI messages from the data stream.
-        for (int offs = 0; offs < packet->length;) {
+        for (NSUInteger offs = 0; offs < packet->length;) {
             MIDIMessage *message = [[MIDIMessage alloc] init];
-            offs = [message readPacket:packet dataOffset:offs];
+            offs = [message readPacket:packet offset:offs];
             // Call the delegate method.
             dispatch_async(dispatch_get_main_queue(), ^{
                 [client.delegate processIncomingMIDIMessage:message from:source];
@@ -101,10 +101,7 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
         Byte buffer[32];
         MIDIPacketList *packetList = (MIDIPacketList *)buffer;
         MIDIPacket *packet = MIDIPacketListInit(packetList);
-        
-        UInt32 data = message.packedData;
-        MIDIPacketListAdd(packetList, sizeof(buffer), packet, 0, 3, (Byte*)&data);
-        
+        MIDIPacketListAdd(packetList, sizeof(buffer), packet, 0, message.length, message.bytes);
         MIDISend(_midiOutputPort, MIDIGetDestination(self.defaultDestination), packetList);
     }
 }

@@ -3,13 +3,20 @@
 struct MIDIPacket; // Forward declaration.
 
 @interface MIDIMessage : NSObject
+{
+    Byte _status;
+    Byte _data1;
+    Byte _data2;
+}
 
-- (id)initWithBytes:(const Byte *)bytes;
-- (int)readPacket:(const struct MIDIPacket *)packet dataOffset:(int)offset;
+- (void)readBytes:(const Byte *)bytes length:(NSUInteger)length;
+- (NSUInteger)readPacket:(const struct MIDIPacket *)packet offset:(NSUInteger)offset;
 
-@property (readonly) UInt32 packedData;
-@property (assign) Byte status;
-@property (assign) Byte data1;
-@property (assign) Byte data2;
+@property (readonly) Byte *bytes;
+@property (readonly) NSUInteger length;
+
+@property (readonly) Byte status;
+@property (readonly) Byte data1;
+@property (readonly) Byte data2;
 
 @end

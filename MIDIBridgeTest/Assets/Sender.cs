@@ -25,7 +25,7 @@ public class Sender : MonoBehaviour
             }
             flipFlop = !flipFlop;
 
-            client.Send(message.Bytes, 4, endPoint);
+            client.Send(message.Bytes, 3, endPoint);
 
             Debug.Log ("Sent: " + message);
 

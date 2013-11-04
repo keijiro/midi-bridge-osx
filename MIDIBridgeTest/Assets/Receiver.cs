@@ -20,9 +20,7 @@ public class Receiver : MonoBehaviour
     {
         if (client.Available > 0) {
             var data = client.Receive(ref endPoint);
-            if (data.Length == 4) {
-                Debug.Log ("recv: " + new MidiMessage(data));
-            }
+            Debug.Log ("recv: " + new MidiMessage(data));
         }
     }
 }

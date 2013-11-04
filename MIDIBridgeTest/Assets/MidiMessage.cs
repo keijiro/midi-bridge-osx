@@ -15,13 +15,12 @@
     {
         status = data [0];
         data1 = data [1];
-        data2 = data [2];
+        data2 = (data.Length > 2) ? data [2] : (byte)0;
     }
 
-    public byte[] Bytes
-    {
+    public byte[] Bytes {
         get {
-            return new byte[] { status, data1, data2, 0 };
+            return new byte[] { status, data1, data2 };
         }
     }
 

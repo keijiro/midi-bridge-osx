@@ -1,51 +1,62 @@
 #import "MIDIMessage.h"
-#import <CoreFoundation/CoreFoundation.h>
 #import <CoreMIDI/CoreMIDI.h>
 
 @implementation MIDIMessage
 
-- (id)initWithBytes:(const Byte *)bytes
+#pragma mark Property accessors
+
+- (Byte *)bytes
 {
-    self = [super init];
-    if (self) {
-        self.status = bytes[0];
-        self.data1 = bytes[1];
-        self.data2 = bytes[2];
-    }
-    return self;
+    return &_status;
 }
 
-- (int)readPacket:(const MIDIPacket *)packet dataOffset:(int)offset
+- (NSUInteger)length
+{
+    return (_data2 & 0x80) ? 2 : 3;
+}
+
+- (void)readBytes:(const Byte *)bytes length:(NSUInteger)length
+{
+    NSAssert(length >= 2, @"Invalid data length.");
+    _status = bytes[0];
+    _data1 = bytes[1];
+    _data2 = (length > 2) ? bytes[2] : 0x80;
+}
+
+- (NSUInteger)readPacket:(const MIDIPacket *)packet offset:(NSUInteger)offset
 {
     // Status byte.
-    self.status = packet->data[offset];
+    _status = packet->data[offset];
     
-    if (++offset >= packet->length) return offset;
+    if (++offset >= packet->length) {
+        // This packet is actually corrupted.
+        _data1 = 0;
+        _data2 = 0x80;
+        return offset;
+    }
     
     // 1st data byte.
     Byte data = packet->data[offset];
     if (data & 0x80) return offset;
-    self.data1 = data;
+    _data1 = data;
     
-    if (++offset >= packet->length) return offset;
+    if (++offset >= packet->length) {
+        _data2 = 0x80;
+        return offset;
+    }
     
     // 2nd data byte.
     data = packet->data[offset];
-    if (data & 0x80) return offset;
-    self.data2 = data;
+    if (data & 0x80) {
+        _data2 = 0x80;
+        return offset;
+    }
+    _data2 = data;
     
     // Simply dispose the reset of the data.
     while (++offset < packet->length && packet->data[offset] < 0x80){}
     
     return offset;
-}
-
-- (UInt32)packedData
-{
-    return
-        (UInt32)self->_status |
-        ((UInt32)self->_data1 << 8) |
-        ((UInt32)self->_data2 << 16);
 }
 
 @end
