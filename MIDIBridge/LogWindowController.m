@@ -6,14 +6,14 @@
 static const char *statusByteToCString(Byte b)
 {
     static const char *texts[] = {
-        "Note Off",
-        "Note On",
-        "Aftertouch",
-        "Control Change",
-        "Program Change",
-        "Pressure",
-        "Pitch Wheel",
-        "System"
+        "Note Off",         // 0x8*
+        "Note On",          // 0x9*
+        "Aftertouch",       // 0xa*
+        "Control Change",   // 0xb*
+        "Program Change",   // 0xc*
+        "Pressure",         // 0xd*
+        "Pitch Wheel",      // 0xe*
+        "System"            // 0xf*
     };
     return texts[(b >> 4) & 7];
 }
@@ -39,20 +39,30 @@ static const char *statusByteToCString(Byte b)
     [super windowDidLoad];
 }
 
+- (IBAction)showWindow:(id)sender
+{
+    // Reload the data before popping up.
+    [self.inLogTable reloadData];
+    [self.outLogTable reloadData];
+    [super showWindow:sender];
+}
+
 #pragma mark Logger functions
 
 - (void)logIncomingMessage:(MIDIMessage *)message
 {
     [self.inLog insertObject:message atIndex:0];
     if (self.inLog.count > _maxLogCount) [self.inLog removeLastObject];
-    [self.inLogTable reloadData];
+    // Reload the data only if the window is visible.
+    if (self.window.isVisible) [self.inLogTable reloadData];
 }
 
 - (void)logOutgoingMessage:(MIDIMessage *)message
 {
     [self.outLog insertObject:message atIndex:0];
     if (self.outLog.count > _maxLogCount) [self.outLog removeLastObject];
-    [self.outLogTable reloadData];
+    // Reload the data only if the window is visible.
+    if (self.window.isVisible) [self.outLogTable reloadData];
 }
 
 #pragma mark Data source interface for NSTableView
