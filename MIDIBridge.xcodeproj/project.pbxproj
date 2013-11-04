@@ -147,9 +147,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0FD64F2E18238780000BA60B /* MIDIBridge */ = {
+		0FD64F2E18238780000BA60B /* MIDI Bridge */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0FD64F6018238781000BA60B /* Build configuration list for PBXNativeTarget "MIDIBridge" */;
+			buildConfigurationList = 0FD64F6018238781000BA60B /* Build configuration list for PBXNativeTarget "MIDI Bridge" */;
 			buildPhases = (
 				0FD64F2B18238780000BA60B /* Sources */,
 				0FD64F2C18238780000BA60B /* Frameworks */,
@@ -159,7 +159,7 @@
 			);
 			dependencies = (
 			);
-			name = MIDIBridge;
+			name = "MIDI Bridge";
 			productName = MIDIBridge;
 			productReference = 0FD64F2F18238780000BA60B /* MIDIBridge.app */;
 			productType = "com.apple.product-type.application";
@@ -187,7 +187,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0FD64F2E18238780000BA60B /* MIDIBridge */,
+				0FD64F2E18238780000BA60B /* MIDI Bridge */,
 			);
 		};
 /* End PBXProject section */
@@ -361,7 +361,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0FD64F6018238781000BA60B /* Build configuration list for PBXNativeTarget "MIDIBridge" */ = {
+		0FD64F6018238781000BA60B /* Build configuration list for PBXNativeTarget "MIDI Bridge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0FD64F6118238781000BA60B /* Debug */,
