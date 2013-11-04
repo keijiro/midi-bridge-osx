@@ -10,7 +10,7 @@
 @property (weak) id delegate;
 @property (readonly) NSUInteger sourceCount;
 @property (readonly) NSUInteger destinationCount;
-@property (assign) NSInteger defaultDestination;
+@property (assign, nonatomic) NSInteger defaultDestination;
 
 - (id)initWithDelegate:(id)delegate;
 - (void)sendMessage:(MIDIMessage *)message;

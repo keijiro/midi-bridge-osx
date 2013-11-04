@@ -97,15 +97,27 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
     _sources = [[NSMutableArray alloc] initWithCapacity:sourceCount];
     
     for (int i = 0; i < sourceCount; i++) {
-        // Connect the MIDI source to the input port.
         MIDIEndpointRef endpoint = MIDIGetSource(i);
         MIDIEndpoint *source = [[MIDIEndpoint alloc] initWithEndpointRef:endpoint];
         [_sources addObject:source];
+        // Connect the MIDI source to the input port.
         MIDIPortConnectSource(_midiInputPort, endpoint, (__bridge void *)(source));
     }
     
-    // FIXME: choose a default destination properly.
+    // Retrieve the destination setting.
+    SInt32 uidDestination = (SInt32)[[NSUserDefaults standardUserDefaults] integerForKey:@"DefaultDestination"];
+
+    // Look for the destination which has the same unique ID.
+    ItemCount destinationCount = MIDIGetNumberOfDestinations();
     _defaultDestination = -1;
+    for (int i = 0; i < destinationCount; i++) {
+        SInt32 uid;
+        MIDIObjectGetIntegerProperty(MIDIGetDestination(i), kMIDIPropertyUniqueID, &uid);
+        if (uid == uidDestination) {
+            _defaultDestination = i;
+            break;
+        }
+    }
 }
 
 - (void)sendMessage:(MIDIMessage *)message
@@ -142,6 +154,16 @@ static void ReadProc(const MIDIPacketList *packetList, void *readProcRefCon, voi
     CFStringRef name;
     MIDIObjectGetStringProperty(MIDIGetDestination(number), kMIDIPropertyDisplayName, &name);
     return (NSString*)CFBridgingRelease(name);
+}
+
+- (void)setDefaultDestination:(NSInteger)destination
+{
+    _defaultDestination = destination;
+    
+    // Store the unique ID for the future use.
+    SInt32 uid;
+    MIDIObjectGetIntegerProperty(MIDIGetDestination(destination), kMIDIPropertyUniqueID, &uid);
+    [[NSUserDefaults standardUserDefaults] setInteger:uid forKey:@"DefaultDestination"];
 }
 
 @end
