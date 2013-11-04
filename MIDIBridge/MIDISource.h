@@ -2,9 +2,6 @@
 #import <CoreMIDI/CoreMIDI.h>
 
 @interface MIDISource : NSObject
-{
-    MIDIEndpointRef _endpoint;
-}
 
 @property (strong) NSString *displayName;
 

@@ -1,5 +1,4 @@
 #import "MIDIMessage.h"
-#import <CoreMIDI/CoreMIDI.h>
 
 @implementation MIDIMessage
 

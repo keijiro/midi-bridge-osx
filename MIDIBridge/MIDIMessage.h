@@ -1,6 +1,5 @@
 #import <Foundation/Foundation.h>
-
-struct MIDIPacket; // Forward declaration.
+#import <CoreMIDI/CoreMIDI.h>
 
 @interface MIDIMessage : NSObject
 {
