@@ -8,9 +8,9 @@ public class Tester : MonoBehaviour
     IEnumerator Start ()
     {
         while (true) {
-            MidiBridge.instance.SendMessage(0x90, 50, 100);
+            MidiBridge.instance.Send(0x90, 50, 100);
             yield return new WaitForSeconds(0.5f);
-            MidiBridge.instance.SendMessage(0x80, 50, 0);
+            MidiBridge.instance.Send(0x80, 50, 0);
             yield return new WaitForSeconds(0.5f);
         }
     }

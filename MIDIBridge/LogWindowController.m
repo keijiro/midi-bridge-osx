@@ -85,7 +85,7 @@ static const char *statusByteToCString(Byte b)
     if (_outLogCount < _maxLogCount) {
         [_outMessageLog addObject:message];
     } else {
-        NSUInteger index = _inLogCount % _maxLogCount;
+        NSUInteger index = _outLogCount % _maxLogCount;
         [_outMessageLog replaceObjectAtIndex:index withObject:message];
     }
     _outLogCount++;

@@ -40,14 +40,18 @@ public class MidiBridge : MonoBehaviour
         StartCoroutine (ReceiverCoroutine ());
     }
 
-    public void SendMessage (byte status, byte data1, byte data2 = 0xff)
+    public void Send (byte status, byte data1, byte data2 = 0xff)
     {
         if (tcpClient != null && tcpClient.Connected) {
             smallBuffer [0] = (data2 == 0xff) ? (byte)2 : (byte)3;
             smallBuffer [1] = status;
             smallBuffer [2] = data1;
             smallBuffer [3] = data2;
-            tcpClient.GetStream ().Write (smallBuffer, 0, 4);
+            try {
+                tcpClient.GetStream ().Write (smallBuffer, 0, 4);
+            } catch (System.IO.IOException exception) {
+                Debug.Log (exception);
+            }
         }
     }
 

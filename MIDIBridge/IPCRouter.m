@@ -181,9 +181,9 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType callbackType
         
         // Call the delegate for each message.
         NSInteger offset = 0;
-        for (; offset + 4 < bufferFilled; offset += 4) {
+        for (; offset + 4 <= bufferFilled; offset += 4) {
             MIDIMessage *message = [[MIDIMessage alloc] init];
-            [message readBytes:buffer + offset + 1 length:buffer[offset]];
+            [message readBytes:buffer offset:offset + 1 length:offset + 1 + buffer[offset]];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate processIncomingIPCMessage:message];
             });
