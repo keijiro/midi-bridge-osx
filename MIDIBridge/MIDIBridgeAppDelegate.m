@@ -12,7 +12,7 @@
     LogWindowController *_logWindowController;
     
     NSStatusItem *_statusItem;
-    NSInteger _signalCount;
+    NSInteger _indicator;
 }
 @end
 
@@ -65,7 +65,7 @@
 {
     [_ipcRouter sendMessage:message];
     [_logWindowController logIncomingMessage:message from:source];
-    _signalCount++;
+    _indicator = 1;
 }
 
 #pragma mark IPCRouter delegate methods
@@ -74,7 +74,7 @@
 {
     [_midiClient sendMessage:message];
     [_logWindowController logOutgoingMessage:message];
-    _signalCount++;
+    _indicator = 1;
 }
 
 #pragma mark Status menu handlers
@@ -116,9 +116,13 @@
 
 - (void)updateIndicator
 {
-    NSString *imageName = (_signalCount == 0) ? @"Status" : @"StatusActive";
-    _statusItem.image = [NSImage imageNamed:imageName];
-    _signalCount = 0;
+    if (_indicator > 0) {
+        _statusItem.image = [NSImage imageNamed:@"StatusActive"];
+        _indicator = -1;
+    } else if (_indicator < 0) {
+        _statusItem.image = [NSImage imageNamed:@"Status"];
+        _indicator = 0;
+    }
 }
 
 @end
