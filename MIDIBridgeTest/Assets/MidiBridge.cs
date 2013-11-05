@@ -31,7 +31,7 @@ public class MidiBridge : MonoBehaviour
         }
 
         messages = new Queue<MidiMessage> ();
-        smallBuffer = new byte[3];
+        smallBuffer = new byte[4];
     }
 
     void Start ()
@@ -40,13 +40,14 @@ public class MidiBridge : MonoBehaviour
         StartCoroutine (ReceiverCoroutine ());
     }
 
-    public void SendMessage(byte status, byte data1, byte data2 = 0xff)
+    public void SendMessage (byte status, byte data1, byte data2 = 0xff)
     {
         if (tcpClient != null && tcpClient.Connected) {
-            smallBuffer [0] = status;
-            smallBuffer [1] = data1;
-            smallBuffer [2] = data2;
-            tcpClient.GetStream ().Write (smallBuffer, 0, (data2 == 0xff) ? 2 : 3);
+            smallBuffer [0] = (data2 == 0xff) ? (byte)2 : (byte)3;
+            smallBuffer [1] = status;
+            smallBuffer [2] = data1;
+            smallBuffer [3] = data2;
+            tcpClient.GetStream ().Write (smallBuffer, 0, 4);
         }
     }
 
@@ -54,7 +55,7 @@ public class MidiBridge : MonoBehaviour
     IEnumerator ConnectionCoroutine ()
     {
         // "Active Sense" message for heartbeating.
-        var heartbeat = new byte[2] {0xff, 0xfe};
+        var heartbeat = new byte[4] {2, 0xff, 0xfe, 0};
 
         while (true) {
             // Try to open the connection.
@@ -113,42 +114,23 @@ public class MidiBridge : MonoBehaviour
         byte[] buffer = new byte[2048];
 
         while (true) {
-            // Do nothing if the connection in unavailable.
-            if (tcpClient == null || !tcpClient.Connected || tcpClient.Available == 0) {
+            // Do nothing if the connection is not ready.
+            if (tcpClient == null || !tcpClient.Connected || tcpClient.Available < 4) {
                 yield return null;
                 continue;
             }
 
-            // Receive messages from the socket.
-            int length = tcpClient.GetStream ().Read (buffer, 0, buffer.Length);
-            int offset = 0;
+            // Receive data from the socket.
+            var available = Mathf.Min ((tcpClient.Available / 4) * 4, buffer.Length);
+            var bufferFilled = tcpClient.GetStream ().Read (buffer, 0, available);
 
-            // Look for the first message.
-            while (offset < length && buffer[offset] < 0x80) {
-                offset++;
-            }
-
-            while (offset < length) {
-                var status = buffer [offset++];
-
-                if (offset == length || buffer [offset] > 0x7f) {
-                    messages.Enqueue (new MidiMessage (status));
-                    continue;
+            for (var offset = 0; offset < bufferFilled; offset += 4) {
+                var length = buffer [offset];
+                if (length == 2) {
+                    messages.Enqueue (new MidiMessage (buffer [offset + 1], buffer [offset + 2]));
+                } else if (length == 3) {
+                    messages.Enqueue (new MidiMessage (buffer [offset + 1], buffer [offset + 2], buffer [offset + 3]));
                 }
-
-                var data1 = buffer [offset++];
-
-                if (offset == length || buffer [offset] > 0x7f) {
-                    messages.Enqueue (new MidiMessage (status, data1));
-                    continue;
-                }
-
-                var data2 = buffer [offset++];
-                while (offset < length && buffer[offset] < 0x80) {
-                    offset++;
-                }
-                
-                messages.Enqueue (new MidiMessage (status, data1, data2));
             }
 
             yield return null;

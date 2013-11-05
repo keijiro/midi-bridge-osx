@@ -14,6 +14,8 @@
     CFSocketRef _socket;
     NSInputStream *_inputStream;
     NSOutputStream *_outputStream;
+    Byte buffer[1024];
+    NSInteger bufferFilled;
 }
 
 - (void)initSocket;
@@ -52,9 +54,20 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType callbackType
 - (void)sendMessage:(MIDIMessage *)message
 {
     if (_outputStream != nil) {
-        NSInteger result = [_outputStream write:message.bytes maxLength:message.length];
-        // Immediately close if there is an error.
-        if (result != message.length) [self closeConnection];
+        const Byte *bytes = message.bytes;
+        NSUInteger length = message.length;
+        
+        Byte packet[4] = {
+            length,
+            bytes[0],
+            (length < 2) ? 0 : bytes[1],
+            (length < 3) ? 0 : bytes[2]
+        };
+        
+        NSInteger result = [_outputStream write:packet maxLength:sizeof(packet)];
+        
+        // Immediately close if there is something wrong.
+        if (result < 4) [self closeConnection];
     }
 }
 
@@ -146,6 +159,8 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType callbackType
     
     _inputStream = nil;
     _outputStream = nil;
+    
+    bufferFilled = 0;
 }
 
 #pragma mark Socket event handler
@@ -154,21 +169,32 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType callbackType
 {
     if (streamEvent == NSStreamEventHasBytesAvailable) {
         // Read data from the socket.
-        Byte buffer[2048];
-        NSInteger length = [_inputStream read:buffer maxLength:sizeof(buffer)];
+        NSInteger actuallyRead = [_inputStream read:buffer + bufferFilled maxLength:sizeof(buffer) - bufferFilled];
+
+        // Abort if there is something wrong.
+        if (actuallyRead < 0) {
+            [self closeConnection];
+            return;
+        }
+        
+        bufferFilled += actuallyRead;
         
         // Call the delegate for each message.
-        for (NSInteger offset = 0; offset <= length;) {
-            if (buffer[offset] >= 0x80) {
-                MIDIMessage *message = [[MIDIMessage alloc] init];
-                offset += [message readBytes:(buffer + offset) length:(length - offset)];
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [self.delegate processIncomingIPCMessage:message];
-                });
-            } else {
-                // The data seem to be corrupted. Anyway go ahead.
-                offset++;
-            }
+        NSInteger offset = 0;
+        for (; offset + 4 < bufferFilled; offset += 4) {
+            MIDIMessage *message = [[MIDIMessage alloc] init];
+            [message readBytes:buffer + offset + 1 length:buffer[offset]];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate processIncomingIPCMessage:message];
+            });
+        }
+        
+        // Truncate the buffer.
+        if (offset == bufferFilled) {
+            bufferFilled = 0;
+        } else {
+            memcpy(buffer, buffer + offset, bufferFilled - offset);
+            bufferFilled -= offset;
         }
     }
 
