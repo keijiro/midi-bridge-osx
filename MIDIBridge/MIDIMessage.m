@@ -18,36 +18,42 @@
 
 - (NSUInteger)readBytes:(const Byte *)bytes offset:(NSUInteger)offset length:(NSUInteger)length
 {
-    if (length < offset + 2) {
-        // No data, do nothing.
-        return offset;
-    }
+    NSAssert(offset < length, @"Invalid argument.");
     
-    _status = bytes[offset++];
-    
-    // 1st data byte.
-    Byte data = bytes[offset];
-    if (data & 0x80) {
+    _data1 = 0x80;
+    _data2 = 0x80;
+
+    // Status byte.
+    Byte temp = bytes[offset++];
+    if (temp < 0x80) {
         // It seems to be corrupted. Replace with an Active Sense event.
         _status = 0xff;
         _data1 = 0xfe;
-        _data2 = 0x80;
         return offset;
     }
-    _data1 = data;
+    _status = temp;
+    
+    if (offset >= length) {
+        return offset;
+    }
+    
+    // 1st data byte.
+    temp = bytes[offset];
+    if (temp & 0x80) {
+        return offset;
+    }
+    _data1 = temp;
     
     if (++offset >= length) {
-        _data2 = 0x80;
         return offset;
     }
     
     // 2nd data byte.
-    data = bytes[offset];
-    if (data & 0x80) {
-        _data2 = 0x80;
+    temp = bytes[offset];
+    if (temp & 0x80) {
         return offset;
     }
-    _data2 = data;
+    _data2 = temp;
     
     // Simply dispose the reset of the data.
     while (++offset < length && bytes[offset] < 0x80) {}
