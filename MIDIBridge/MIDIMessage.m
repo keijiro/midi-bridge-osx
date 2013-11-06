@@ -11,7 +11,7 @@
 
 - (NSUInteger)length
 {
-    return (_data2 & 0x80) ? 2 : 3;
+    return (_data1 & 0x80) ? 1 : ((_data2 & 0x80) ? 2 : 3);
 }
 
 #pragma mark Reader methods
@@ -20,15 +20,14 @@
 {
     NSAssert(offset < length, @"Invalid argument.");
     
-    _data1 = 0x80;
-    _data2 = 0x80;
+    _data1 = 0xff;
+    _data2 = 0xff;
 
     // Status byte.
     Byte temp = bytes[offset++];
     if (temp < 0x80) {
         // It seems to be corrupted. Replace with an Active Sense event.
-        _status = 0xff;
-        _data1 = 0xfe;
+        _status = 0xfe;
         return offset;
     }
     _status = temp;
