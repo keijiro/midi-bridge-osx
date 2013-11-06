@@ -6,31 +6,53 @@ using System.Net;
 
 public class MidiBridge : MonoBehaviour
 {
+    #region Configurations
     // Port number used to communicate with Bridge.
     const int portNumber = 52364;
+    #endregion
 
-    // Reference to the singleton.
-    public static MidiBridge instance;
+    #region Public interface
+    public struct Message
+    {
+        public byte status;
+        public byte data1;
+        public byte data2;
+        
+        public Message (byte status, byte data1, byte data2)
+        {
+            this.status = status;
+            this.data1 = data1;
+            this.data2 = data2;
+        }
+        
+        public override string ToString ()
+        {
+            return string.Format ("s({0:X2}) d({1:X2},{2:X2})", status, data1, data2);
+        }
+    }
 
-    // TCP connection.
-    TcpClient tcpClient;
-    bool isConnecting;
+    public Queue<Message> incomingMessageQueue;
 
-    // Message buffer.
-    public Queue<MidiMessage> messages;
+    public void Send (int status, int data1 = 0xff, int data2 = 0xff)
+    {
+        if (tcpClient != null && tcpClient.Connected) {
+            smallBuffer [0] = (byte)status;
+            smallBuffer [1] = (byte)data1;
+            smallBuffer [2] = (byte)data2;
+            smallBuffer [3] = 0xff;
+            try {
+                tcpClient.GetStream ().Write (smallBuffer, 0, 4);
+            } catch (System.IO.IOException exception) {
+                Debug.Log (exception);
+            }
+        }
+    }
+    #endregion
 
-    // Send buffet.
-    byte[] smallBuffer;
-
+    #region Monobehaviour functions
     void Awake ()
     {
-        if (instance != null) {
-            Destroy (gameObject);
-        } else {
-            instance = this;
-        }
-
-        messages = new Queue<MidiMessage> ();
+        incomingMessageQueue = new Queue<Message> ();
         smallBuffer = new byte[4];
     }
 
@@ -39,27 +61,21 @@ public class MidiBridge : MonoBehaviour
         StartCoroutine (ConnectionCoroutine ());
         StartCoroutine (ReceiverCoroutine ());
     }
+    #endregion
 
-    public void Send (byte status, byte data1, byte data2 = 0xff)
-    {
-        if (tcpClient != null && tcpClient.Connected) {
-            smallBuffer [0] = (data2 == 0xff) ? (byte)2 : (byte)3;
-            smallBuffer [1] = status;
-            smallBuffer [2] = data1;
-            smallBuffer [3] = data2;
-            try {
-                tcpClient.GetStream ().Write (smallBuffer, 0, 4);
-            } catch (System.IO.IOException exception) {
-                Debug.Log (exception);
-            }
-        }
-    }
+    #region TCP connection
+    // TCP connection.
+    TcpClient tcpClient;
+    bool isConnecting;
+
+    // A small buffer used for sending messages.
+    byte[] smallBuffer;
 
     // Coroutine for managing the connection.
     IEnumerator ConnectionCoroutine ()
     {
         // "Active Sense" message for heartbeating.
-        var heartbeat = new byte[4] {1, 0xfe, 0, 0};
+        var heartbeat = new byte[4] {0xfe, 0xff, 0xff, 0xff};
 
         while (true) {
             // Try to open the connection.
@@ -129,15 +145,33 @@ public class MidiBridge : MonoBehaviour
             var bufferFilled = tcpClient.GetStream ().Read (buffer, 0, available);
 
             for (var offset = 0; offset < bufferFilled; offset += 4) {
-                var length = buffer [offset];
-                if (length == 2) {
-                    messages.Enqueue (new MidiMessage (buffer [offset + 1], buffer [offset + 2]));
-                } else if (length == 3) {
-                    messages.Enqueue (new MidiMessage (buffer [offset + 1], buffer [offset + 2], buffer [offset + 3]));
-                }
+                incomingMessageQueue.Enqueue (new Message (buffer [offset], buffer [offset + 1], buffer [offset + 2]));
             }
 
             yield return null;
         }
     }
+    #endregion
+
+    #region Singleton class interface
+    static MidiBridge _instance;
+    
+    public static MidiBridge instance {
+        get {
+            if (_instance == null) {
+                var previous = FindObjectOfType (typeof(MidiBridge));
+                if (previous) {
+                    Debug.LogWarning ("Initialized twice. Don't use MidiBridge in the scene hierarchy.");
+                    _instance = (MidiBridge)previous;
+                } else {
+                    var go = new GameObject ();
+                    _instance = go.AddComponent<MidiBridge> ();
+                    DontDestroyOnLoad (go);
+                    go.hideFlags = HideFlags.HideInHierarchy;
+                }
+            }
+            return _instance;
+        }
+    }
+    #endregion
 }

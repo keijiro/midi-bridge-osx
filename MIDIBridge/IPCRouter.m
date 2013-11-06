@@ -58,10 +58,10 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType callbackType
         NSUInteger length = message.length;
         
         Byte packet[4] = {
-            length,
             bytes[0],
-            (length < 2) ? 0 : bytes[1],
-            (length < 3) ? 0 : bytes[2]
+            (length < 2) ? 0xff : bytes[1],
+            (length < 3) ? 0xff : bytes[2],
+            0xff
         };
         
         NSInteger result = [_outputStream write:packet maxLength:sizeof(packet)];
@@ -183,7 +183,7 @@ static void SocketCallback(CFSocketRef socket, CFSocketCallBackType callbackType
         NSInteger offset = 0;
         for (; offset + 4 <= bufferFilled; offset += 4) {
             MIDIMessage *message = [[MIDIMessage alloc] init];
-            [message readBytes:buffer offset:offset + 1 length:offset + 1 + buffer[offset]];
+            [message readBytes:buffer offset:offset length:offset + 4];
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.delegate processIncomingIPCMessage:message];
             });

@@ -20,8 +20,8 @@
 {
     NSAssert(offset < length, @"Invalid argument.");
     
-    _data1 = 0x80;
-    _data2 = 0x80;
+    _data1 = 0xff;
+    _data2 = 0xff;
 
     // Status byte.
     Byte temp = bytes[offset++];
