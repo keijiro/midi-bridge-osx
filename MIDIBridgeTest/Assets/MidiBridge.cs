@@ -28,12 +28,8 @@ using System.Net;
 
 public class MidiBridge : MonoBehaviour
 {
-    #region Configurations
-    // Port number used to communicate with Bridge.
-    const int portNumber = 52364;
-    #endregion
-
     #region Public interface
+
     public struct Message
     {
         public byte status;
@@ -69,9 +65,16 @@ public class MidiBridge : MonoBehaviour
             }
         }
     }
+
+    public void Warmup()
+    {
+        // Do nothing!
+    }
+
     #endregion
 
     #region Monobehaviour functions
+
     void Awake ()
     {
         incomingMessageQueue = new Queue<Message> ();
@@ -83,9 +86,14 @@ public class MidiBridge : MonoBehaviour
         StartCoroutine (ConnectionCoroutine ());
         StartCoroutine (ReceiverCoroutine ());
     }
+
     #endregion
 
     #region TCP connection
+
+    // Port number used to communicate with Bridge.
+    const int portNumber = 52364;
+
     // TCP connection.
     TcpClient tcpClient;
     bool isConnecting;
@@ -173,9 +181,11 @@ public class MidiBridge : MonoBehaviour
             yield return null;
         }
     }
+
     #endregion
 
-    #region Singleton class interface
+    #region Singleton class handling
+
     static MidiBridge _instance;
     
     public static MidiBridge instance {
@@ -195,5 +205,6 @@ public class MidiBridge : MonoBehaviour
             return _instance;
         }
     }
+
     #endregion
 }
