@@ -186,7 +186,7 @@ public class MidiBridge : MonoBehaviour
                     Debug.LogWarning ("Initialized twice. Don't use MidiBridge in the scene hierarchy.");
                     _instance = (MidiBridge)previous;
                 } else {
-                    var go = new GameObject ();
+                    var go = new GameObject ("__MidiBridge");
                     _instance = go.AddComponent<MidiBridge> ();
                     DontDestroyOnLoad (go);
                     go.hideFlags = HideFlags.HideInHierarchy;
