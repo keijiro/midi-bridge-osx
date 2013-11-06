@@ -125,7 +125,7 @@ static const char *statusByteToCString(Byte b)
         if ((message.status >> 4) == 0xf) {
             return nil;
         } else {
-            return [NSString stringWithFormat:@"%d", (message.status & 0xf)];
+            return [NSString stringWithFormat:@"%d", (message.status & 0xf) + 1];
         }
     }
     
