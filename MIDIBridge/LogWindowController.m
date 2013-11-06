@@ -122,7 +122,11 @@ static const char *statusByteToCString(Byte b)
     
     // Channel column.
     if ([tableColumn.identifier isEqualToString:@"channel"]) {
-        return [NSString stringWithFormat:@"%d", (message.status & 0xf)];
+        if ((message.status >> 4) == 0xf) {
+            return nil;
+        } else {
+            return [NSString stringWithFormat:@"%d", (message.status & 0xf)];
+        }
     }
     
     // Event column.
@@ -133,8 +137,10 @@ static const char *statusByteToCString(Byte b)
     // Data column
     if (message.length > 2) {
         return [NSString stringWithFormat:@"%d, %d", message.data1, message.data2];
-    } else {
+    } else if (message.length == 2) {
         return [NSString stringWithFormat:@"%d", message.data1];
+    } else {
+        return nil;
     }
 }
 
