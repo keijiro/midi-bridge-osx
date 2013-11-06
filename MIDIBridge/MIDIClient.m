@@ -23,12 +23,18 @@ static void StateChangedHander(const MIDINotification* message, void* refCon)
 {
     MIDIClient *client = (__bridge MIDIClient *)(refCon);
     
-    // Only process additions and removals.
-    if (message->messageID != kMIDIMsgObjectAdded && message->messageID != kMIDIMsgObjectRemoved) return;
-    
-    // Only process source and destination operations.
-    const MIDIObjectAddRemoveNotification *addRemoveDetail = (const MIDIObjectAddRemoveNotification *)(message);
-    if (addRemoveDetail->childType != kMIDIObjectType_Source && addRemoveDetail->childType != kMIDIObjectType_Destination) return;
+    // Only process following events.
+    // - Source additions and removals.
+    // - Destination additions and removals.
+    // - Setup change event.
+    if (message->messageID == kMIDIMsgObjectAdded || message->messageID == kMIDIMsgObjectRemoved) {
+        const MIDIObjectAddRemoveNotification *addRemoveDetail = (const MIDIObjectAddRemoveNotification *)(message);
+        if (addRemoveDetail->childType != kMIDIObjectType_Source && addRemoveDetail->childType != kMIDIObjectType_Destination) {
+            return;
+        }
+    } else if (message->messageID != kMIDIMsgSetupChanged) {
+        return;
+    }
     
     // Reset the client status.
     [client reset];

@@ -59,7 +59,7 @@ public class MidiBridge : MonoBehaviour
     IEnumerator ConnectionCoroutine ()
     {
         // "Active Sense" message for heartbeating.
-        var heartbeat = new byte[4] {2, 0xff, 0xfe, 0};
+        var heartbeat = new byte[4] {1, 0xfe, 0, 0};
 
         while (true) {
             // Try to open the connection.
